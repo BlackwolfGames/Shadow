@@ -33,6 +33,7 @@ job("run tests") {
             
               # Installing livingdoc and specflow tools via dotnet
               dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+              export PATH="$PATH:/root/.dotnet/tools"
               
               # Building and running tests from ShadowTest
               dotnet build ShadowTest/ShadowTest.csproj
