@@ -35,13 +35,25 @@ job("run tests") {
               dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
               export PATH="${'$'}PATH:/root/.dotnet/tools"
               
+              # Building and running tests from Analyzers1.Tests
+              dotnet build Analyzers1.Tests/Analyzers1.Tests.csproj
+              dotnet test Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "trx;LogFileName=results.trx"
+              
+              # Building and running tests from SourceVisUnit
+              dotnet build SourceVisUnit/SourceVisUnit.csproj
+              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "trx;LogFileName=results.trx"
+              
+              # Building and running tests from SourceVisSpec
+              dotnet build SourceVisSpec/SourceVisSpec.csproj
+              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "trx;LogFileName=results.trx"
+              
               # Building and running tests from ShadowTest
               dotnet build ShadowTest/ShadowTest.csproj
-              dotnet test ShadowTest/ShadowTest.csproj
+              dotnet test ShadowTest/ShadowTest.csproj  --logger "trx;LogFileName=results.trx"
               
               # Building and running tests from ShadowSpecs
               dotnet build ShadowSpecs/ShadowSpecs.csproj
-              dotnet test ShadowSpecs/ShadowSpecs.csproj
+              dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "trx;LogFileName=results.trx"
               
               # Generating living documentation
               cd ShadowSpecs/bin/Debug/net7.0
@@ -59,7 +71,7 @@ job("run tests") {
           // Don't fail job if build.zip is not found
           optional = true
           // Target path to artifact in file repository.
-          remotePath = "{{ run:number }}/build.zip"
+          remotePath = "build.html"
           // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
           onStatus = OnStatus.SUCCESS
       }
