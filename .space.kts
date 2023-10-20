@@ -33,8 +33,8 @@ job("run tests") {
       dotnet test ShadowTest/ShadowTest.csproj
       dotnet test ShadowSpec/ShadowSpec.csproj
 
-      chmod +x Livingdoc.bat
-      ./Livingdoc.bat
+      chmod +x LivingDoc.bat
+      ./LivingDoc.bat
       """
         }
           // Upload build/build.zip to the default file repository
