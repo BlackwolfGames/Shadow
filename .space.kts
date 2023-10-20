@@ -30,12 +30,23 @@ job("run tests") {
       container(displayName = "C# Container", image = "mcr.microsoft.com/dotnet/sdk:latest") {
         shellScript {
             content = """
-      dotnet test ShadowTest/ShadowTest.csproj
-      dotnet test ShadowSpec/ShadowSpec.csproj
-
-      cd ShadowSpecs/bin/Debug/net7.0
-      livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
-      cp LivingDoc.html ../../../../LivingDoc.html
+            
+              # Installing livingdoc and specflow tools via dotnet
+              dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+              
+              # Building and running tests from ShadowTest
+              dotnet build ShadowTest/ShadowTest.csproj
+              dotnet test ShadowTest/ShadowTest.csproj
+              
+              # Building and running tests from ShadowSpecs
+              dotnet build ShadowSpecs/ShadowSpecs.csproj
+              dotnet test ShadowSpecs/ShadowSpecs.csproj
+              
+              # Generating living documentation
+              cd ShadowSpecs/bin/Debug/net7.0
+              livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
+              cp LivingDoc.html ../../../../LivingDoc.html
+              """
 
       """
         }
