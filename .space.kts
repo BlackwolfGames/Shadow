@@ -29,14 +29,11 @@ job("run tests") {
       // Container for C#
       container(displayName = "C# Container", image = "mcr.microsoft.com/dotnet/sdk:latest") {
         shellScript {
-        beforeScript = """
-                # Adjusting the PATH for the tools
-                export PATH="$PATH:/root/.dotnet/tools"
-            """
             content = """
             
               # Installing livingdoc and specflow tools via dotnet
               dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+              export PATH="${'$'}PATH:/root/.dotnet/tools"
               
               # Building and running tests from ShadowTest
               dotnet build ShadowTest/ShadowTest.csproj
