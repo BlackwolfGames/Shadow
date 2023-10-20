@@ -29,10 +29,27 @@ job("run tests") {
       // Container for C#
       container(displayName = "C# Container", image = "mcr.microsoft.com/dotnet/sdk:latest") {
         shellScript {
-          content = """
-          dotnet restore
-          dotnet test
-          """
+            content = """
+      dotnet test ShadowTest/ShadowTest.csproj
+      dotnet test ShadowSpec/ShadowSpec.csproj
+
+      chmod +x Livingdoc.bat
+      ./Livingdoc.bat
+      """
         }
+          // Upload build/build.zip to the default file repository
+      fileArtifacts {
+          // To upload to another repo, uncomment the next line
+          // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
+
+          // Local path to artifact relative to working dir
+          localPath = "./LivingDoc.html"
+          // Don't fail job if build.zip is not found
+          optional = true
+          // Target path to artifact in file repository.
+          remotePath = "{{ run:number }}/build.zip"
+          // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
+          onStatus = OnStatus.SUCCESS
       }
     }
+}
