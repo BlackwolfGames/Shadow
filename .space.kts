@@ -24,14 +24,10 @@ job("run tests") {
           cargo build --release --verbose --package shadow_rust
           """
         }
-        // Uploading the Rust library as an artifact
-        artifactRules = listOf("shadow_rust/target/release/*.so")
       }
       
       // Container for C#
       container(displayName = "C# Container", image = "mcr.microsoft.com/dotnet/sdk:latest") {
-        // Downloading the Rust library from artifacts
-        artifactRules = listOf("*.so => MyCSProject/libs/")
         shellScript {
           content = """
           dotnet restore
@@ -40,5 +36,3 @@ job("run tests") {
         }
       }
     }
-  }
-}
