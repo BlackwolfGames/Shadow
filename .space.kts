@@ -47,8 +47,6 @@ job("run tests") {
               livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
               cp LivingDoc.html ../../../../LivingDoc.html
               """
-
-      """
         }
           // Upload build/build.zip to the default file repository
       fileArtifacts {
