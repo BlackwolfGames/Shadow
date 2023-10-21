@@ -153,10 +153,10 @@ job("Weekly stress test") {
             content = """
             
               # Installing livingdoc and specflow tools via dotnet
+              export PATH="${'$'}PATH:/root/.dotnet/tools"
               dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
               dotnet tool install -g dotnet-stryker
-              dotnet tool install --global dotnet-reportgenerator-globaltool
-              export PATH="${'$'}PATH:/root/.dotnet/tools"
+              dotnet add package JunitXml.TestLogger
               
               mkdir artifacts
               cd artifacts
@@ -171,7 +171,7 @@ job("Weekly stress test") {
               
               cd Analyzers1/Analyzers1.Tests
               dotnet stryker
-              cp reports ../../artifacts/Analysis/report
+              cp StrykerOutput ../../artifacts/Analysis/MutationReport
               cp TestResults ../../artifacts/Analysis/TestResults
               cd ../../
               
@@ -181,7 +181,7 @@ job("Weekly stress test") {
               
               cd SourceVisUnit
               dotnet stryker
-              cp reports ../artifacts/SourceVis/reportUnit
+              cp StrykerOutput ../artifacts/SourceVis/MutationReportUnit
               cp TestResults ../artifacts/SourceVis/TestResultsUnit
               cd ../
               
@@ -189,9 +189,14 @@ job("Weekly stress test") {
               dotnet build SourceVisSpec/SourceVisSpec.csproj
               dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "junit;LogFileName=test-results.xml"
               
-              cd SourceVisSpec
+              # Generating living documentation
+              cd SourceVisSpec/bin/Debug/net7.0
+              livingdoc test-assembly SourceVisSpec.dll -t TestExecution.json
+              cp LivingDoc.html ../../../../artifacts/SourceVis/LivingDocSource.html
+              cd ../../../
+              
               dotnet stryker
-              cp reports ../artifacts/SourceVis/reportSpec
+              cp StrykerOutput ../artifacts/SourceVis/MutationReporttSpec
               cp TestResults ../artifacts/SourceVis/TestResultsSpec
               cd ../
               
@@ -201,7 +206,7 @@ job("Weekly stress test") {
               
               cd ShadowTest
               dotnet stryker
-              cp reports ../artifacts/Shadow/reportUnit
+              cp StrykerOutput ../artifacts/Shadow/MutationReportUnit
               cp TestResults ../artifacts/Shadow/TestResultsUnit
               cd ../
               
@@ -209,28 +214,24 @@ job("Weekly stress test") {
               dotnet build ShadowSpecs/ShadowSpecs.csproj
               dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "junit;LogFileName=test-results.xml"
               
-              cd ShadowSpecs
+              # Generating living documentation
+              cd ShadowSpecs/bin/Debug/net7.0
+              livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
+              cp LivingDoc.html ../../../../artifacts/Shadow/LivingDocShadow.html
+              cd ../../../
+              
               dotnet stryker
-              cp reports ../artifacts/Shadow/reportSpec
+              cp StrykerOutput ../artifacts/Shadow/MutationReportSpec
               cp TestResults ../artifacts/Shadow/TestResultsSpec
               cd ../    
-              
               
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
               dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
               dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/SourceVis
               
-              # Generating living documentation
-              cd SourceVisSpec/bin/Debug/net7.0
-              livingdoc test-assembly SourceVisSpec.dll -t TestExecution.json
-              cp LivingDoc.html ../../../../artifacts/SourceVis/LivingDocSource.html
-              cd ../../../../
               
                /mnt/space/work/Shadow/ShadowSpecs/bin/Debug/net7.0/ShadowSpecs.dll 
               # Generating living documentation
-              cd ShadowSpecs/bin/Debug/net7.0
-              livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
-              cp LivingDoc.html ../../../../artifacts/Shadow/LivingDocShadow.html
               """
         }
 
