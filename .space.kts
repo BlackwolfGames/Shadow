@@ -22,7 +22,6 @@ job("run tests") {
           content = """
           apt-get update
           apt-get install -y clang lld mingw-w64
-          rustup target add x86_64-pc-windows-msvc
           rustup target add x86_64-pc-windows-gnu
               
           cd shadow_rust
@@ -35,8 +34,11 @@ job("run tests") {
           ls
           cd target 
           ls
+          cd x86_64-pc-windows-gnu 
+          ls
           cd release
           ls
+          
           
           cp rusty_brain.dll ../../../artifacts/rusty_brain.dll
           """
