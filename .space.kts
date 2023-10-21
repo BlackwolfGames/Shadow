@@ -24,14 +24,15 @@ job("run tests on commit") {
               apt-get install -y clang lld mingw-w64
               rustup target add x86_64-pc-windows-gnu
                   
-              mkdir shadow_rust/artifacts
+              cd shadow_rust
+              mkdir artifacts
+              cd rusty_brain
               
-              cargo build --release --package shadow_rust/rusty_brain/rusty_brain --target=x86_64-pc-windows-gnu
-              cargo test --package shadow_rust/rusty_brain/rusty_brain --lib tests --no-fail-fast
+              cargo build --release --package rusty_brain --target=x86_64-pc-windows-gnu
+              cargo test --package rusty_brain --lib tests --no-fail-fast
               
-              cp shadow_rust/rusty_brain/target/x86_64-pc-windows-gnu/release/rusty_brain.dll shadow_rust/artifacts/rusty_brain.dll
+              cp target/x86_64-pc-windows-gnu/release/rusty_brain.dll ../artifacts/rusty_brain.dll
               """
-        }
 
           // Upload build/build.zip to the default file repository
           fileArtifacts {
@@ -110,11 +111,12 @@ job("Weekly stress test") {
                   
               cd shadow_rust
               mkdir artifacts
+              cd rusty_brain
               
               cargo build --release --package rusty_brain --target=x86_64-pc-windows-gnu
               cargo test --package rusty_brain --lib tests --no-fail-fast
               
-              cp rusty_brain/target/x86_64-pc-windows-gnu/release/rusty_brain.dll artifacts/rusty_brain.dll
+              cp target/x86_64-pc-windows-gnu/release/rusty_brain.dll ../artifacts/rusty_brain.dll
               """
         }
 
