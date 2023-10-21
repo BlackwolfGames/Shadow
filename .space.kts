@@ -21,7 +21,7 @@ job("run tests") {
         shellScript {
           content = """
           apt-get update
-          apt-get install clang lld
+          apt-get install -y clang lld
           rustup target add x86_64-pc-windows-msvc
               
           cd shadow_rust
