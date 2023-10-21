@@ -171,8 +171,8 @@ job("Weekly stress test") {
               
               cd Analyzers1/Analyzers1.Tests
               dotnet stryker
-              cp StrykerOutput ../../artifacts/Analysis/MutationReport
-              cp TestResults ../../artifacts/Analysis/TestResults
+              cp -r StrykerOutput ../../artifacts/Analysis/MutationReport
+              cp -r TestResults ../../artifacts/Analysis/TestResults
               cd ../../
               
               # Building and running tests from SourceVisUnit
@@ -181,8 +181,8 @@ job("Weekly stress test") {
               
               cd SourceVisUnit
               dotnet stryker
-              cp StrykerOutput ../artifacts/SourceVis/MutationReportUnit
-              cp TestResults ../artifacts/SourceVis/TestResultsUnit
+              cp -r StrykerOutput ../artifacts/SourceVis/MutationReportUnit
+              cp -r TestResults ../artifacts/SourceVis/TestResultsUnit
               cd ../
               
               # Building and running tests from SourceVisSpec
@@ -196,8 +196,8 @@ job("Weekly stress test") {
               cd ../../../
               
               dotnet stryker
-              cp StrykerOutput ../artifacts/SourceVis/MutationReporttSpec
-              cp TestResults ../artifacts/SourceVis/TestResultsSpec
+              cp -r StrykerOutput ../artifacts/SourceVis/MutationReporttSpec
+              cp -r TestResults ../artifacts/SourceVis/TestResultsSpec
               cd ../
               
               # Building and running tests from ShadowTest
@@ -205,9 +205,11 @@ job("Weekly stress test") {
               dotnet test ShadowTest/ShadowTest.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
               
               cd ShadowTest
-              dotnet stryker
-              cp StrykerOutput ../artifacts/Shadow/MutationReportUnit
-              cp TestResults ../artifacts/Shadow/TestResultsUnit
+              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
+              cp -r StrykerOutput ../artifacts/Shadow/MutationReportUnitCore
+              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowEngine.csproj
+              cp -r StrykerOutput ../artifacts/Shadow/MutationReportUnitEngine
+              cp -r TestResults ../artifacts/Shadow/TestResultsUnit
               cd ../
               
               # Building and running tests from ShadowSpecs
@@ -221,17 +223,18 @@ job("Weekly stress test") {
               cd ../../../
               
               dotnet stryker
-              cp StrykerOutput ../artifacts/Shadow/MutationReportSpec
-              cp TestResults ../artifacts/Shadow/TestResultsSpec
+              
+              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
+              cp -r StrykerOutput ../artifacts/Shadow/MutationReportSpecCore
+              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowEngine.csproj
+              cp -r StrykerOutput ../artifacts/Shadow/MutationReportSpecEngine
+              cp -r TestResults ../artifacts/Shadow/TestResultsSpec
               cd ../    
               
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
               dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
               dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/SourceVis
               
-              
-               /mnt/space/work/Shadow/ShadowSpecs/bin/Debug/net7.0/ShadowSpecs.dll 
-              # Generating living documentation
               """
         }
 
