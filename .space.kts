@@ -23,12 +23,13 @@ job("run tests") {
           apt-get update
           apt-get install -y clang lld mingw-w64
           rustup target add x86_64-pc-windows-msvc
+          rustup target add x86_64-pc-windows-gnu
               
           cd shadow_rust
           
           mkdir artifacts
           cd rusty_brain
-          cargo build --release --verbose --package rusty_brain --target=x86_64-pc-windows-msvc
+          cargo build --release --verbose --package rusty_brain --target=x86_64-pc-windows-gnu
           cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --show-output
           
           cp rusty_brain.dll ../../../artifacts/rusty_brain.dll
