@@ -87,8 +87,8 @@ job("run tests") {
               cd ..
               
               # Building and running tests from Analyzers1.Tests
-              dotnet build Analyzers1.Tests/Analyzers1.Tests.csproj
-              dotnet test Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj
+              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "trx;LogFileName=results.trx"
               
               # Building and running tests from SourceVisUnit
               dotnet build SourceVisUnit/SourceVisUnit.csproj
@@ -106,7 +106,7 @@ job("run tests") {
               dotnet build ShadowSpecs/ShadowSpecs.csproj
               dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "trx;LogFileName=results.trx"
               
-              dotnet build Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
+              dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
               dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
               dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Sourcevis
               
@@ -120,7 +120,7 @@ job("run tests") {
               # Generating living documentation
               cd ShadowSpecs/bin/Debug/net7.0
               livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
-              cp LivingDocShadow.html ../../../../artifacts/Shadow/LivingDocShadow.html
+              cp LivingDoc.html ../../../../artifacts/Shadow/LivingDocShadow.html
               """
         }
 
