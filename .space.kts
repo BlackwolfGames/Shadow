@@ -167,7 +167,7 @@ job("Weekly stress test") {
               
               # Building and running tests from Analyzers1.Tests
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj
-              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "junit;LogFileName=test-results.xml"
+              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
               
               cd Analyzers1/Analyzers1.Tests
               dotnet stryker
@@ -177,7 +177,7 @@ job("Weekly stress test") {
               
               # Building and running tests from SourceVisUnit
               dotnet build SourceVisUnit/SourceVisUnit.csproj
-              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "junit;LogFileName=test-results.xml"
+              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
               
               cd SourceVisUnit
               dotnet stryker
@@ -187,7 +187,7 @@ job("Weekly stress test") {
               
               # Building and running tests from SourceVisSpec
               dotnet build SourceVisSpec/SourceVisSpec.csproj
-              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "junit;LogFileName=test-results.xml"
+              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
               
               # Generating living documentation
               cd SourceVisSpec/bin/Debug/net7.0
@@ -202,7 +202,7 @@ job("Weekly stress test") {
               
               # Building and running tests from ShadowTest
               dotnet build ShadowTest/ShadowTest.csproj
-              dotnet test ShadowTest/ShadowTest.csproj  --logger "junit;LogFileName=test-results.xml"
+              dotnet test ShadowTest/ShadowTest.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
               
               cd ShadowTest
               dotnet stryker
@@ -212,7 +212,7 @@ job("Weekly stress test") {
               
               # Building and running tests from ShadowSpecs
               dotnet build ShadowSpecs/ShadowSpecs.csproj
-              dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "junit;LogFileName=test-results.xml"
+              dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
               
               # Generating living documentation
               cd ShadowSpecs/bin/Debug/net7.0
