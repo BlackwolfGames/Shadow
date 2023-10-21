@@ -20,9 +20,8 @@ job("run tests") {
       container(displayName = "Rust Container", image = "rust:latest") {
         shellScript {
           content = """
-              
-          sudo apt-get update
-          sudo apt-get install clang lld
+          apt-get update
+          apt-get install clang lld
           rustup target add x86_64-pc-windows-msvc
               
           cd shadow_rust
@@ -71,6 +70,13 @@ job("run tests") {
               dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
               export PATH="${'$'}PATH:/root/.dotnet/tools"
               
+              mkdir artifacts
+              cd artifacts
+              mkdir Sourcevis
+              mkdir Shadow
+              mkdir Analysis
+              cd ..
+              
               # Building and running tests from Analyzers1.Tests
               dotnet build Analyzers1.Tests/Analyzers1.Tests.csproj
               dotnet test Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "trx;LogFileName=results.trx"
@@ -91,10 +97,9 @@ job("run tests") {
               dotnet build ShadowSpecs/ShadowSpecs.csproj
               dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "trx;LogFileName=results.trx"
               
-              mkdir artifacts
-              cd artifacts
-              mkdir Sourcevis
-              mkdir Shadow
+              dotnet build Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
+              dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
+              dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Sourcevis
               
               # Generating living documentation
               cd SourceVisSpec/bin/Debug/net7.0
@@ -108,7 +113,21 @@ job("run tests") {
               cp LivingDocShadow.html ../../../../artifacts/Shadow/LivingDocShadow.html
               """
         }
-          // Upload build/build.zip to the default file repository
+
+          fileArtifacts {
+              // To upload to another repo, uncomment the next line
+              // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
+
+              // Local path to artifact relative to working dir
+              localPath = "artifacts/Analysis"
+              // Don't fail job if build.zip is not found
+              optional = false
+              archive = true
+              // Target path to artifact in file repository.
+              remotePath = "Analysis.zip"
+              // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
+              onStatus = OnStatus.SUCCESS
+          }
       fileArtifacts {
           // To upload to another repo, uncomment the next line
           // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
