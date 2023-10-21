@@ -24,7 +24,7 @@ job("run tests") {
           
           mkdir artifacts
           cd rusty_brain
-          cargo-rustc build --release --verbose --package rusty_brain
+          cargo build --release --verbose --package rusty_brain
           cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --show-output
           
           cp target/release/rusty_brain.dll ../artifacts/rusty_brain.dll
