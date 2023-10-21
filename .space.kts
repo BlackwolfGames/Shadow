@@ -40,7 +40,7 @@ job("run tests") {
           ls
           
           
-          cp rusty_brain.dll ../../../artifacts/rusty_brain.dll
+          cp rusty_brain.dll ../../../../artifacts/rusty_brain.dll
           """
         }
 
