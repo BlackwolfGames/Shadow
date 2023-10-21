@@ -154,9 +154,10 @@ job("Weekly stress test") {
             
               # Installing livingdoc and specflow tools via dotnet
               export PATH="${'$'}PATH:/root/.dotnet/tools"
+              export SONAR_TOKEN=d0b9e4738bc0feb4757b03b2b5b087cd6376d6a7
               dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
               dotnet tool install -g dotnet-stryker
-              dotnet add package JunitXml.TestLogger
+              dotnet tool install --global dotnet-sonarscanner
               
               mkdir artifacts
               cd artifacts
@@ -164,6 +165,11 @@ job("Weekly stress test") {
               mkdir Shadow
               mkdir Analysis
               cd ..
+              
+              dotnet sonarscanner begin \
+                /o:blackwolfgames \
+                /k:BlackwolfGames_Shadow \
+                /d:sonar.host.url=https://sonarcloud.io
               
               # Building and running tests from Analyzers1.Tests
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj
@@ -221,9 +227,7 @@ job("Weekly stress test") {
               livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
               cp LivingDoc.html ../../../../artifacts/Shadow/LivingDocShadow.html
               cd ../../../
-              
-              dotnet stryker
-              
+                            
               dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
               cp -r StrykerOutput ../artifacts/Shadow/MutationReportSpecCore
               dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowEngine.csproj
@@ -234,7 +238,7 @@ job("Weekly stress test") {
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
               dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
               dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/SourceVis
-              
+              dotnet sonarscanner end
               """
         }
 
@@ -257,12 +261,12 @@ job("Weekly stress test") {
           // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
           // Local path to artifact relative to working dir
-          localPath = "artifacts/Sourcevis"
+          localPath = "artifacts/SourceVis"
           // Don't fail job if build.zip is not found
           optional = false
           archive = true
           // Target path to artifact in file repository.
-          remotePath = "Sourcevis.zip"
+          remotePath = "SourceVis.zip"
           // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
           onStatus = OnStatus.SUCCESS
       }
