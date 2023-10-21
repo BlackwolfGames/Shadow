@@ -17,7 +17,7 @@ job("run tests") {
         depth = UNLIMITED_DEPTH
     }
     // Container for Rust
-      container(displayName = "Rust Container", image = "rust:nightly") {
+      container(displayName = "Rust Container", image = "rust:latest") {
         shellScript {
           content = """
           cd shadow_rust
@@ -25,7 +25,7 @@ job("run tests") {
           mkdir artifacts
           cd rusty_brain
           cargo-rustc build --release --verbose --package rusty_brain
-          cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --format=json -Z unstable-options --show-output
+          cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --format=json --show-output
           
           cp target/release/rusty_brain.dll ../artifacts/rusty_brain.dll
           """
