@@ -65,23 +65,23 @@ job("run tests on commit") {
             content = """              
               # Building and running tests from Analyzers1.Tests
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj
-              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj   --logger "junit;LogFileName=test-results.xml"
               
               # Building and running tests from SourceVisUnit
               dotnet build SourceVisUnit/SourceVisUnit.csproj
-              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "junit;LogFileName=test-results.xml"
               
               # Building and running tests from SourceVisSpec
               dotnet build SourceVisSpec/SourceVisSpec.csproj
-              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "junit;LogFileName=test-results.xml"
               
               # Building and running tests from ShadowTest
               dotnet build ShadowTest/ShadowTest.csproj
-              dotnet test ShadowTest/ShadowTest.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test ShadowTest/ShadowTest.csproj   --logger "junit;LogFileName=test-results.xml"
               
               # Building and running tests from ShadowSpecs
               dotnet build ShadowSpecs/ShadowSpecs.csproj
-              dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test ShadowSpecs/ShadowSpecs.csproj   --logger "junit;LogFileName=test-results.xml"
               """
         }
     }
@@ -108,12 +108,13 @@ job("Weekly stress test") {
               apt-get install -y clang lld mingw-w64
               rustup target add x86_64-pc-windows-gnu
                   
-              mkdir shadow_rust/artifacts
+              cd shadow_rust
+              mkdir artifacts
               
-              cargo build --release --package shadow_rust/rusty_brain/rusty_brain --target=x86_64-pc-windows-gnu
-              cargo test --package shadow_rust/rusty_brain/rusty_brain --lib tests --no-fail-fast
+              cargo build --release --package rusty_brain --target=x86_64-pc-windows-gnu
+              cargo test --package rusty_brain --lib tests --no-fail-fast
               
-              cp shadow_rust/rusty_brain/target/x86_64-pc-windows-gnu/release/rusty_brain.dll shadow_rust/artifacts/rusty_brain.dll
+              cp rusty_brain/target/x86_64-pc-windows-gnu/release/rusty_brain.dll artifacts/rusty_brain.dll
               """
         }
 
