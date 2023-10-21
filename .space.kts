@@ -20,28 +20,17 @@ job("run tests on commit") {
       container(displayName = "Rust Container", image = "rust:latest") {
         shellScript {
           content = """
-          apt-get update
-          apt-get install -y clang lld mingw-w64
-          rustup target add x86_64-pc-windows-gnu
+              apt-get update
+              apt-get install -y clang lld mingw-w64
+              rustup target add x86_64-pc-windows-gnu
+                  
+              mkdir shadow_rust/artifacts
               
-          cd shadow_rust
-          
-          mkdir artifacts
-          cd rusty_brain
-          cargo build --release --verbose --package rusty_brain --target=x86_64-pc-windows-gnu
-          cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --show-output
-          
-          ls
-          cd target 
-          ls
-          cd x86_64-pc-windows-gnu 
-          ls
-          cd release
-          ls
-          
-          
-          cp rusty_brain.dll ../../../../artifacts/rusty_brain.dll
-          """
+              cargo build --release --package shadow_rust/rusty_brain/rusty_brain --target=x86_64-pc-windows-gnu
+              cargo test --package shadow_rust/rusty_brain/rusty_brain --lib tests --no-fail-fast
+              
+              cp shadow_rust/rusty_brain/target/x86_64-pc-windows-gnu/release/rusty_brain.dll shadow_rust/artifacts/rusty_brain.dll
+              """
         }
 
           // Upload build/build.zip to the default file repository
@@ -66,7 +55,7 @@ job("run tests on commit") {
           fileInput {
               // we use the provided parameter to reference the default repo
               source = FileSource.FileArtifact(
-                      "{{ run:file-artifacts.default-repository }}/Shadow/jobs/run-tests/{{ run:number }}",
+                      "{{ run:file-artifacts.default-repository }}/Shadow/jobs/Weekly-stress-test/{{ run:number }}",
                       "rusty_brain.dll"
               )
               localPath = "RustLib/rusty_brain.dll"
@@ -115,28 +104,17 @@ job("Weekly stress test") {
       container(displayName = "Rust Container", image = "rust:latest") {
         shellScript {
           content = """
-          apt-get update
-          apt-get install -y clang lld mingw-w64
-          rustup target add x86_64-pc-windows-gnu
+              apt-get update
+              apt-get install -y clang lld mingw-w64
+              rustup target add x86_64-pc-windows-gnu
+                  
+              mkdir shadow_rust/artifacts
               
-          cd shadow_rust
-          
-          mkdir artifacts
-          cd rusty_brain
-          cargo build --release --verbose --package rusty_brain --target=x86_64-pc-windows-gnu
-          cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --show-output
-          
-          ls
-          cd target 
-          ls
-          cd x86_64-pc-windows-gnu 
-          ls
-          cd release
-          ls
-          
-          
-          cp rusty_brain.dll ../../../../artifacts/rusty_brain.dll
-          """
+              cargo build --release --package shadow_rust/rusty_brain/rusty_brain --target=x86_64-pc-windows-gnu
+              cargo test --package shadow_rust/rusty_brain/rusty_brain --lib tests --no-fail-fast
+              
+              cp shadow_rust/rusty_brain/target/x86_64-pc-windows-gnu/release/rusty_brain.dll shadow_rust/artifacts/rusty_brain.dll
+              """
         }
 
           // Upload build/build.zip to the default file repository
@@ -177,60 +155,70 @@ job("Weekly stress test") {
               
               mkdir artifacts
               cd artifacts
-              mkdir Sourcevis
+              mkdir SourceVis
               mkdir Shadow
               mkdir Analysis
               cd ..
               
               # Building and running tests from Analyzers1.Tests
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj
-              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "junit;LogFileName=test-results.xml"
               
               cd Analyzers1/Analyzers1.Tests
               dotnet stryker
+              cp reports ../../artifacts/Analysis/report
+              cp TestResults ../../artifacts/Analysis/TestResults
               cd ../../
               
               # Building and running tests from SourceVisUnit
               dotnet build SourceVisUnit/SourceVisUnit.csproj
-              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "junit;LogFileName=test-results.xml"
               
               cd SourceVisUnit
               dotnet stryker
+              cp reports ../artifacts/SourceVis/reportUnit
+              cp TestResults ../artifacts/SourceVis/TestResultsUnit
               cd ../
               
               # Building and running tests from SourceVisSpec
               dotnet build SourceVisSpec/SourceVisSpec.csproj
-              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "junit;LogFileName=test-results.xml"
               
               cd SourceVisSpec
               dotnet stryker
+              cp reports ../artifacts/SourceVis/reportSpec
+              cp TestResults ../artifacts/SourceVis/TestResultsSpec
               cd ../
               
               # Building and running tests from ShadowTest
               dotnet build ShadowTest/ShadowTest.csproj
-              dotnet test ShadowTest/ShadowTest.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test ShadowTest/ShadowTest.csproj  --logger "junit;LogFileName=test-results.xml"
               
               cd ShadowTest
               dotnet stryker
+              cp reports ../artifacts/Shadow/reportUnit
+              cp TestResults ../artifacts/Shadow/TestResultsUnit
               cd ../
               
               # Building and running tests from ShadowSpecs
               dotnet build ShadowSpecs/ShadowSpecs.csproj
-              dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "trx;LogFileName=results.trx"
+              dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "junit;LogFileName=test-results.xml"
               
               cd ShadowSpecs
               dotnet stryker
+              cp reports ../artifacts/Shadow/reportSpec
+              cp TestResults ../artifacts/Shadow/TestResultsSpec
               cd ../    
               
               
               dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
               dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
-              dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Sourcevis
+              dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/SourceVis
               
               # Generating living documentation
               cd SourceVisSpec/bin/Debug/net7.0
               livingdoc test-assembly SourceVisSpec.dll -t TestExecution.json
-              cp LivingDoc.html ../../../../artifacts/Sourcevis/LivingDocSource.html
+              cp LivingDoc.html ../../../../artifacts/SourceVis/LivingDocSource.html
               cd ../../../../
               
                /mnt/space/work/Shadow/ShadowSpecs/bin/Debug/net7.0/ShadowSpecs.dll 
