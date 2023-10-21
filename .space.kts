@@ -116,6 +116,7 @@ job("run tests") {
               cp LivingDoc.html ../../../../artifacts/Sourcevis/LivingDocSource.html
               cd ../../../../
               
+               /mnt/space/work/Shadow/ShadowSpecs/bin/Debug/net7.0/ShadowSpecs.dll 
               # Generating living documentation
               cd ShadowSpecs/bin/Debug/net7.0
               livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
