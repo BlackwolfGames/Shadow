@@ -57,7 +57,7 @@ job("run tests on commit") {
           fileInput {
               // we use the provided parameter to reference the default repo
               source = FileSource.FileArtifact(
-                      "{{ run:file-artifacts.default-repository }}/Shadow/jobs/Weekly-stress-test/{{ run:number }}",
+                      "{{ run:file-artifacts.default-repository }}/Shadow/jobs/run-tests-on-commit/{{ run:number }}",
                       "rusty_brain.dll"
               )
               localPath = "RustLib/rusty_brain.dll"
@@ -143,7 +143,7 @@ job("Weekly stress test") {
           fileInput {
               // we use the provided parameter to reference the default repo
               source = FileSource.FileArtifact(
-                      "{{ run:file-artifacts.default-repository }}/Shadow/jobs/run-tests/{{ run:number }}",
+                      "{{ run:file-artifacts.default-repository }}/Shadow/jobs/Weekly-stress-test/{{ run:number }}",
                       "rusty_brain.dll"
               )
               localPath = "RustLib/rusty_brain.dll"
