@@ -148,10 +148,7 @@ job("Weekly stress test") {
               )
               localPath = "RustLib/rusty_brain.dll"
           }
-
-        environmentVariables = mapOf(
-                "SONAR_TOKEN" to Secrets("SONAR_TOKEN")
-            )
+          env["SONAR_TOKEN"] = "{{ project:SONAR_TOKEN }}"
         shellScript {
             content = """
             apt update
