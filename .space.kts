@@ -33,6 +33,7 @@ job("run tests on commit") {
               
               cp target/x86_64-pc-windows-gnu/release/rusty_brain.dll ../artifacts/rusty_brain.dll
               """
+              }
 
           // Upload build/build.zip to the default file repository
           fileArtifacts {
