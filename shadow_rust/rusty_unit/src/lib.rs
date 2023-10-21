@@ -13,8 +13,8 @@ impl<T> Constraint<T> {
 }
 
 pub mod is {
-    use super::Constraint::*;
     use super::Constraint;
+    use super::Constraint::*;
 
     pub mod not {
         use super::*;
@@ -32,11 +32,17 @@ pub mod is {
         }
     }
 
-    pub fn equal_to<T>(value: T) -> Constraint<T> { EqualTo(value) }
+    pub fn equal_to<T>(value: T) -> Constraint<T> {
+        EqualTo(value)
+    }
 
-    pub fn greater_than<T>(value: T) -> Constraint<T> { GreaterThan(value) }
+    pub fn greater_than<T>(value: T) -> Constraint<T> {
+        GreaterThan(value)
+    }
 
-    pub fn less_than<T>(value: T) -> Constraint<T> { LessThan(value) }
+    pub fn less_than<T>(value: T) -> Constraint<T> {
+        LessThan(value)
+    }
 }
 
 impl<T: PartialOrd> Constraint<T> {
