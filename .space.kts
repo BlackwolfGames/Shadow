@@ -21,13 +21,44 @@ job("run tests") {
         shellScript {
           content = """
           cd shadow_rust
-          cargo build --release --verbose --package shadow_rust
+          
+          mkdir artifacts
+          cd rusty_brain
+          cargo-rustc build --release --verbose --package rusty_brain
+          cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --format=json -Z unstable-options --show-output
+          
+          cp target/release/rusty_brain.dll ../artifacts/rusty_brain.dll
           """
         }
+
+          // Upload build/build.zip to the default file repository
+          fileArtifacts {
+              // To upload to another repo, uncomment the next line
+              // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
+
+              // Local path to artifact relative to working dir
+              localPath = "shadow_rust/artifacts/rusty_brain.dll"
+              // Don't fail job if build.zip is not found
+              optional = false
+              // Target path to artifact in file repository.
+              remotePath = "rusty_brain.dll"
+              // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
+              onStatus = OnStatus.SUCCESS
+          }
       }
       
       // Container for C#
       container(displayName = "C# Container", image = "mcr.microsoft.com/dotnet/sdk:latest") {
+
+          fileInput {
+              // we use the provided parameter to reference the default repo
+              source = FileSource.FileArtifact(
+                      "{{ run:file-artifacts.default-repository }}",
+                      "rusty_brain.dll"
+              )
+              localPath = "RustLib/rusty_brain.dll"
+          }
+
         shellScript {
             content = """
             
@@ -55,10 +86,21 @@ job("run tests") {
               dotnet build ShadowSpecs/ShadowSpecs.csproj
               dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "trx;LogFileName=results.trx"
               
+              mkdir artifacts
+              cd artifacts
+              mkdir Sourcevis
+              mkdir Shadow
+              
+              # Generating living documentation
+              cd SourceVisSpec/bin/Debug/net7.0
+              livingdoc test-assembly SourceVisSpec.dll -t TestExecution.json
+              cp LivingDoc.html ../../../../artifacts/Sourcevis/LivingDocSource.html
+              cd ../../../../
+              
               # Generating living documentation
               cd ShadowSpecs/bin/Debug/net7.0
               livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
-              cp LivingDoc.html ../../../../LivingDoc.html
+              cp LivingDocShadow.html ../../../../artifacts/Shadow/LivingDocShadow.html
               """
         }
           // Upload build/build.zip to the default file repository
@@ -67,13 +109,28 @@ job("run tests") {
           // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
           // Local path to artifact relative to working dir
-          localPath = "./LivingDoc.html"
+          localPath = "artifacts/Sourcevis"
           // Don't fail job if build.zip is not found
-          optional = true
+          optional = false
+          archive = true
           // Target path to artifact in file repository.
-          remotePath = "build.html"
+          remotePath = "Sourcevis.zip"
           // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
           onStatus = OnStatus.SUCCESS
       }
+          fileArtifacts {
+              // To upload to another repo, uncomment the next line
+              // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
+
+              // Local path to artifact relative to working dir
+              localPath = "artifacts/Shadow"
+              // Don't fail job if build.zip is not found
+              optional = false
+              archive = true
+              // Target path to artifact in file repository.
+              remotePath = "Shadow.zip"
+              // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
+              onStatus = OnStatus.SUCCESS
+          }
     }
 }
