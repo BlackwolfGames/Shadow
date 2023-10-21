@@ -149,12 +149,17 @@ job("Weekly stress test") {
               localPath = "RustLib/rusty_brain.dll"
           }
 
+        environmentVariables = mapOf(
+                "SONAR_TOKEN" to Secrets("SONAR_TOKEN")
+            )
         shellScript {
             content = """
+            apt update
+            apt install openjdk-11-jdk
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
             
               # Installing livingdoc and specflow tools via dotnet
-              export PATH="${'$'}PATH:/root/.dotnet/tools"
-              export SONAR_TOKEN=d0b9e4738bc0feb4757b03b2b5b087cd6376d6a7
+              export PATH="${'$'}PATH:/root/.dotnet/tools:${'$'}JAVA_HOME/bin"
               dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
               dotnet tool install -g dotnet-stryker
               dotnet tool install --global dotnet-sonarscanner
@@ -213,7 +218,7 @@ job("Weekly stress test") {
               cd ShadowTest
               dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
               cp -r StrykerOutput ../artifacts/Shadow/MutationReportUnitCore
-              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowEngine.csproj
+              dotnet stryker -p /mnt/space/work/Shadow/ShadowEngine/ShadowEngine.csproj
               cp -r StrykerOutput ../artifacts/Shadow/MutationReportUnitEngine
               cp -r TestResults ../artifacts/Shadow/TestResultsUnit
               cd ../
@@ -230,12 +235,12 @@ job("Weekly stress test") {
                             
               dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
               cp -r StrykerOutput ../artifacts/Shadow/MutationReportSpecCore
-              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowEngine.csproj
+              dotnet stryker -p /mnt/space/work/Shadow/ShadowEngine/ShadowEngine.csproj
               cp -r StrykerOutput ../artifacts/Shadow/MutationReportSpecEngine
               cp -r TestResults ../artifacts/Shadow/TestResultsSpec
               cd ../    
               
-              dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
+              dotnet build Analyzers1/Analyzers1/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
               dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
               dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/SourceVis
               dotnet sonarscanner end
