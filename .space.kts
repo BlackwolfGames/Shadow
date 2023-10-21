@@ -17,7 +17,7 @@ job("run tests") {
         depth = UNLIMITED_DEPTH
     }
     // Container for Rust
-      container(displayName = "Rust Container", image = "rust:latest") {
+      container(displayName = "Rust Container", image = "rust:nightly") {
         shellScript {
           content = """
           cd shadow_rust
