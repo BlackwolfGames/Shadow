@@ -26,4 +26,9 @@
       <Folder Include="Steps\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ShadowCore\ShadowCore.csproj" />
+      <ProjectReference Include="..\ShadowEngine\ShadowEngine.csproj" />
+    </ItemGroup>
+
 </Project>
