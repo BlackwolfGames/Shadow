@@ -32,7 +32,13 @@ job("run tests") {
           cargo build --release --verbose --package rusty_brain --target=x86_64-pc-windows-gnu
           cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --show-output
           
-          cp target/release/rusty_brain.dll ../artifacts/rusty_brain.dll
+          ls
+          cd target 
+          ls
+          cd release
+          ls
+          
+          cp rusty_brain.dll ../../../artifacts/rusty_brain.dll
           """
         }
 
