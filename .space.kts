@@ -20,18 +20,17 @@ job("run tests") {
       container(displayName = "Rust Container", image = "rust:latest") {
         shellScript {
           content = """
+              
+          sudo apt-get update
+          sudo apt-get install clang lld
+          rustup target add x86_64-pc-windows-msvc
+              
           cd shadow_rust
           
           mkdir artifacts
           cd rusty_brain
-          cargo build --release --verbose --package rusty_brain
+          cargo build --release --verbose --package rusty_brain --target=x86_64-pc-windows-msvc
           cargo test --color=always --package rusty_brain --lib tests --no-fail-fast -- --show-output
-          
-          ls
-          cd target
-          ls
-          cd release
-          ls
           
           cp rusty_brain.dll ../../../artifacts/rusty_brain.dll
           """
