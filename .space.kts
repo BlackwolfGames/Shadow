@@ -66,8 +66,8 @@ job("run tests") {
           fileInput {
               // we use the provided parameter to reference the default repo
               source = FileSource.FileArtifact(
-                      "{{ run:file-artifacts.default-repository }}",
-                      "/Shadow/jobs/run-tests/{{ run:number }}/rusty_brain.dll"
+                      "{{ run:file-artifacts.default-repository }}/Shadow/jobs/run-tests/{{ run:number }}",
+                      "rusty_brain.dll"
               )
               localPath = "RustLib/rusty_brain.dll"
           }
