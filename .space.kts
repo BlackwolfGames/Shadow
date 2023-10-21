@@ -155,6 +155,7 @@ job("Weekly stress test") {
               # Installing livingdoc and specflow tools via dotnet
               dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
               dotnet tool install -g dotnet-stryker
+              dotnet tool install --global dotnet-reportgenerator-globaltool
               export PATH="${'$'}PATH:/root/.dotnet/tools"
               
               mkdir artifacts
