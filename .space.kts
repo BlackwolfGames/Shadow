@@ -91,7 +91,7 @@ job("run tests on commit") {
 job("Weekly stress test") {
     startOn {
     
-        gitPush { enabled = true }
+        gitPush { enabled = false }
         schedule { cron("0 0 * * 6") }
 	}
   git {

@@ -3,6 +3,8 @@
 public class Class
 {
     private readonly Dictionary<string, int> _deps = new();
+    
+    public IEnumerable<KeyValuePair<string, int>> Dependencies => _deps;
 
     public void AddDependency(string name)
     {

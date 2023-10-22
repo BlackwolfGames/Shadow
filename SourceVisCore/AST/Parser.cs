@@ -29,7 +29,7 @@ public static class Parser
                 var root = tree.GetCompilationUnitRoot();
 
                 var model = document.GetSemanticModelAsync().Result;
-                await ParseFile(root, model, parsedProject);
+                ParseFile(root, model, parsedProject);
             }
         }
 
@@ -38,19 +38,23 @@ public static class Parser
 
     public static async Task<Project> ParseFromSource(string sourceCode)
     {
-        var tree = CSharpSyntaxTree.ParseText(sourceCode);
-        var root = tree.GetCompilationUnitRoot();
-        var assemblyPath = typeof(object).Assembly.Location;
+        var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var references = loadedAssemblies
+            .Where(assembly => !assembly.IsDynamic) // Filter out dynamic assemblies
+            .Select(assembly => MetadataReference.CreateFromFile(assembly.Location))
+            .ToList();
+        
         var compilation = CSharpCompilation.Create("MyCompilation")
-            .AddReferences(MetadataReference.CreateFromFile(assemblyPath))
-            .AddSyntaxTrees(tree);
-        var semanticModel = compilation.GetSemanticModel(tree);
+            .AddReferences(references)
+            .AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceCode));
+        
+        var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
         var returned = new Project();
-        await ParseFile(root, semanticModel, returned);
+        ParseFile(compilation.SyntaxTrees.First().GetCompilationUnitRoot(), semanticModel, returned);
         return returned;
     }
 
-    private static async Task ParseFile(CompilationUnitSyntax root, SemanticModel? model, Project parsedProject)
+    private static void ParseFile(CompilationUnitSyntax root, SemanticModel? model, Project parsedProject)
     {
         foreach (var classDeclaration in root.DescendantNodes().OfType<ClassDeclarationSyntax>())
         {
@@ -81,7 +85,7 @@ public static class Parser
                      .Select(baseTypeSyntax => model.GetTypeInfo(baseTypeSyntax.Type).Type)
                      .Select(GetDisplayString))
         {
-            parsedClass.AddDependency(fullyQualifiedClassName);
+            parsedClass.AddDependency(fullyQualifiedClassName ?? "BROKEN <inheritance>");
         }
     }
 
@@ -98,7 +102,7 @@ public static class Parser
                      .Select(objectCreation => model.GetSymbolInfo(objectCreation))
                      .Select(GetContainedDisplayString))
         {
-            parsedClass.AddDependency(fullyQualifiedClassName);
+            parsedClass.AddDependency(fullyQualifiedClassName ?? "BROKEN <allocation>");
         }
     }
 
@@ -118,8 +122,18 @@ public static class Parser
             {
                 fullyQualifiedClassName = GetContainedDisplayString(symbolInfo);
             }
+            if (fullyQualifiedClassName == null)
+            {
+                // Take the expression of the invocation and try to split it to get the class name.
+                var invocationExpression = invocation.Expression.ToString();
+                var lastDotIndex = invocationExpression.LastIndexOf('.');
+                if (lastDotIndex > 0)
+                {
+                    fullyQualifiedClassName = invocationExpression.Substring(0, lastDotIndex);
+                }
+            }
 
-            parsedClass.AddDependency(fullyQualifiedClassName);
+            parsedClass.AddDependency(fullyQualifiedClassName ?? "BROKEN <call>");
         }
     }
 }

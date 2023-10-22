@@ -2,7 +2,8 @@
 
 public class Project
 {
-    private readonly Dictionary<string, Class> _classes = new(); 
+    private readonly Dictionary<string, Class> _classes = new();
+    public IEnumerable<KeyValuePair<string, Class>> Classes => _classes;
 
     public Class AddClass(string name)
     {
