@@ -6,7 +6,7 @@
 
 job("run tests on commit") {
     startOn {
-        gitPush { enabled = false }
+        gitPush { enabled = true }
 	}
   git {
         // fetch 'release' branch and tags
