@@ -23,23 +23,37 @@ public static class Parser
             var parsedProject = parsedSolution.AddProject(project.Name);
             foreach (var document in project.Documents)
             {
-                await ParseFile(document, parsedProject);
+                var tree = await document.GetSyntaxTreeAsync();
+                if (tree == null) continue;
+
+                var root = tree.GetCompilationUnitRoot();
+
+                var model = document.GetSemanticModelAsync().Result;
+                await ParseFile(root, model, parsedProject);
             }
         }
 
         return parsedSolution;
     }
 
-    private static async Task ParseFile(Document document, Project parsedProject)
+    public static async Task<Project> ParseFromSource(string sourceCode)
     {
-        var tree = await document.GetSyntaxTreeAsync();
-        if (tree == null) return;
-
+        var tree = CSharpSyntaxTree.ParseText(sourceCode);
         var root = tree.GetCompilationUnitRoot();
+        var assemblyPath = typeof(object).Assembly.Location;
+        var compilation = CSharpCompilation.Create("MyCompilation")
+            .AddReferences(MetadataReference.CreateFromFile(assemblyPath))
+            .AddSyntaxTrees(tree);
+        var semanticModel = compilation.GetSemanticModel(tree);
+        var returned = new Project();
+        await ParseFile(root, semanticModel, returned);
+        return returned;
+    }
+
+    private static async Task ParseFile(CompilationUnitSyntax root, SemanticModel? model, Project parsedProject)
+    {
         foreach (var classDeclaration in root.DescendantNodes().OfType<ClassDeclarationSyntax>())
         {
-            var model = document.GetSemanticModelAsync().Result;
-
             var symbol = model.GetDeclaredSymbol(classDeclaration);
             var fullyQualifiedClassName = symbol?.ToDisplayString();
             var parsedClass = parsedProject.AddClass(fullyQualifiedClassName ?? classDeclaration.Identifier.ValueText);
@@ -55,11 +69,12 @@ public static class Parser
         }
     }
 
-    private static void ParseInheritance(ClassDeclarationSyntax classDeclaration, SemanticModel? model, Class parsedClass)
+    private static void ParseInheritance(ClassDeclarationSyntax classDeclaration, SemanticModel? model,
+        Class parsedClass)
     {
         if (classDeclaration.BaseList == null) return;
 
-        foreach (var fullyQualifiedClassName in 
+        foreach (var fullyQualifiedClassName in
                  classDeclaration
                      .BaseList
                      .Types
@@ -72,7 +87,9 @@ public static class Parser
 
     private static string? GetDisplayString(ITypeSymbol? baseSymbol) => baseSymbol?.ToDisplayString();
 
-    private static string? GetContainedDisplayString(SymbolInfo symbolInfo) => GetDisplayString(symbolInfo.Symbol?.ContainingType);
+    private static string? GetContainedDisplayString(SymbolInfo symbolInfo) =>
+        GetDisplayString(symbolInfo.Symbol?.ContainingType);
+
     private static void ParseNew(ClassDeclarationSyntax classDeclaration, SemanticModel? model, Class parsedClass)
     {
         foreach (var fullyQualifiedClassName in classDeclaration
