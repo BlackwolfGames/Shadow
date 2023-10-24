@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Locator;
+﻿using System.Data;
+using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -43,11 +44,11 @@ public static class Parser
             .Where(assembly => !assembly.IsDynamic) // Filter out dynamic assemblies
             .Select(assembly => MetadataReference.CreateFromFile(assembly.Location))
             .ToList();
-        
+
         var compilation = CSharpCompilation.Create("MyCompilation")
             .AddReferences(references)
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceCode));
-        
+
         var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
         var returned = new Project();
         ParseFile(compilation.SyntaxTrees.First().GetCompilationUnitRoot(), semanticModel, returned);
@@ -83,13 +84,16 @@ public static class Parser
                      .BaseList
                      .Types
                      .Select(baseTypeSyntax => model.GetTypeInfo(baseTypeSyntax.Type).Type)
-                     .Select(GetDisplayString))
+                )
         {
-            parsedClass.AddDependency(fullyQualifiedClassName ?? "BROKEN <inheritance>");
+            var type = fullyQualifiedClassName?.IsAbstract ?? false
+                ? DependencyType.Extension
+                : DependencyType.Implementation;
+            parsedClass.AddDependency(type, GetDisplayString(fullyQualifiedClassName) ?? "BROKEN <inheritance>");
         }
     }
 
-    private static string? GetDisplayString(ITypeSymbol? baseSymbol) => baseSymbol?.ToDisplayString();
+    private static string? GetDisplayString(ISymbol? baseSymbol) => baseSymbol?.ToDisplayString();
 
     private static string? GetContainedDisplayString(SymbolInfo symbolInfo) =>
         GetDisplayString(symbolInfo.Symbol?.ContainingType);
@@ -100,9 +104,11 @@ public static class Parser
                      .DescendantNodes()
                      .OfType<ObjectCreationExpressionSyntax>()
                      .Select(objectCreation => model.GetSymbolInfo(objectCreation))
-                     .Select(GetContainedDisplayString))
+                     .Select(GetContainedDisplayString)
+                )
         {
-            parsedClass.AddDependency(fullyQualifiedClassName ?? "BROKEN <allocation>");
+            parsedClass.AddDependency(DependencyType.DirectInstantiation,
+                fullyQualifiedClassName ?? "BROKEN <allocation>");
         }
     }
 
@@ -113,8 +119,12 @@ public static class Parser
         {
             var symbolInfo = model.GetSymbolInfo(invocation);
             string? fullyQualifiedClassName;
+            var type = symbolInfo.Symbol?.IsStatic ?? false
+                ? DependencyType.StaticInvocation
+                : DependencyType.InstanceInvocation;
             if (symbolInfo.Symbol == null)
             {
+                type = DependencyType.Special;
                 symbolInfo = model.GetSymbolInfo(invocation.ArgumentList.Arguments.First().Expression);
                 fullyQualifiedClassName = symbolInfo.Symbol?.ToDisplayString();
             }
@@ -122,18 +132,14 @@ public static class Parser
             {
                 fullyQualifiedClassName = GetContainedDisplayString(symbolInfo);
             }
+
             if (fullyQualifiedClassName == null)
             {
-                // Take the expression of the invocation and try to split it to get the class name.
-                var invocationExpression = invocation.Expression.ToString();
-                var lastDotIndex = invocationExpression.LastIndexOf('.');
-                if (lastDotIndex > 0)
-                {
-                    fullyQualifiedClassName = invocationExpression.Substring(0, lastDotIndex);
-                }
+                throw new SyntaxErrorException(
+                    $"Class name not resolved for {invocation.Expression.ToString()}, did you forget a 'using'?");
             }
 
-            parsedClass.AddDependency(fullyQualifiedClassName ?? "BROKEN <call>");
+            parsedClass.AddDependency(type, fullyQualifiedClassName);
         }
     }
 }

@@ -24,14 +24,14 @@ public class ParsingSteps
     {
         return pair => Equals(pair.Key, key);
     }
-    [Then(@"The class '(.*)' depends on '(.*)' (.*) times?")]
-    public void ThenTheClassDependsOnTimes(string className, string dependencyName, int dependencyCount)
+    [Then(@"The class '(.*)' depends on '(.*)' as (.*) (.*) times?")]
+    public void ThenTheClassDependsOnTimes(string className, string dependencyName, DependencyType type, int dependencyCount)
     {
         Assert.That(_parsed.Classes.Select(pair => pair.Key), Contains.Item(className));
         Assert.That(_parsed.Classes.First(ContainsKey<Class>(className)).Value.Dependencies.Select(pair => pair.Key), Contains.Item(dependencyName));
         Assert.That(
             _parsed.Classes.First(ContainsKey<Class>(className)).Value
-                .Dependencies.First(ContainsKey<int>(dependencyName)).Value,
+                .Dependencies.First(ContainsKey<Dependency>(dependencyName)).Value[type],
             Is.EqualTo(dependencyCount));
     }
 }

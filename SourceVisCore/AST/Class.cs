@@ -2,14 +2,14 @@
 
 public class Class
 {
-    private readonly Dictionary<string, int> _deps = new();
+    private readonly Dictionary<string, Dependency> _deps = new();
     
-    public IEnumerable<KeyValuePair<string, int>> Dependencies => _deps;
+    public IEnumerable<KeyValuePair<string, Dependency>> Dependencies => _deps;
 
-    public void AddDependency(string name)
+    public void AddDependency(DependencyType type, string name)
     {
-        _deps.TryAdd(name, 0);
-        _deps[name]++;
+        _deps.TryAdd(name, new Dependency());
+        _deps[name].Add(type);
     }
 
     public void Print()
