@@ -11,6 +11,8 @@ public class Dependency
     }
 
     public int this[DependencyType t] => _types[t];
+
+    public int Total => _types.Values.Sum();
 }
 
 public enum DependencyType

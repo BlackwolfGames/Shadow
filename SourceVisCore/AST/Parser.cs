@@ -1,14 +1,23 @@
 ﻿using System.Data;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
+using SourceVisCore.AST.Dependencies;
 
 namespace SourceVisCore.AST;
 
 public static class Parser
 {
+    private static readonly IAnalysisStrategy[] _strategies = {
+        new InvokesAnalysis(),
+        new InstantiatesAnalysis(),
+        new InheritAnalysis()
+    };
+
     public static async Task<Solution> Parse(string solutionPath)
     {
         var instances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
@@ -29,7 +38,8 @@ public static class Parser
 
                 var root = tree.GetCompilationUnitRoot();
 
-                var model = document.GetSemanticModelAsync().Result;
+                var model = await document.GetSemanticModelAsync();
+                Debug.Assert(model != null, nameof(model) + " != null");
                 ParseFile(root, model, parsedProject);
             }
         }
@@ -55,91 +65,35 @@ public static class Parser
         return returned;
     }
 
-    private static void ParseFile(CompilationUnitSyntax root, SemanticModel? model, Project parsedProject)
+    private static void ParseFile(CompilationUnitSyntax root, SemanticModel model, Project parsedProject)
     {
-        foreach (var classDeclaration in root.DescendantNodes().OfType<ClassDeclarationSyntax>())
+        foreach (var classDeclaration in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
         {
             var symbol = model.GetDeclaredSymbol(classDeclaration);
             var fullyQualifiedClassName = symbol?.ToDisplayString();
             var parsedClass = parsedProject.AddClass(fullyQualifiedClassName ?? classDeclaration.Identifier.ValueText);
-
-            // Identify method calls
-            ParseMethod(classDeclaration, model, parsedClass);
-
-            // Identify object creations
-            ParseNew(classDeclaration, model, parsedClass);
-
-            // Identify base classes and interfaces
-            ParseInheritance(classDeclaration, model, parsedClass);
+            AnalyzeNode(classDeclaration, model, parsedClass);
         }
+        
     }
-
-    private static void ParseInheritance(ClassDeclarationSyntax classDeclaration, SemanticModel? model,
-        Class parsedClass)
+    private static void AnalyzeNode(SyntaxNode node, SemanticModel model, Class parsedClass)
     {
-        if (classDeclaration.BaseList == null) return;
-
-        foreach (var fullyQualifiedClassName in
-                 classDeclaration
-                     .BaseList
-                     .Types
-                     .Select(baseTypeSyntax => model.GetTypeInfo(baseTypeSyntax.Type).Type)
-                )
+        foreach (var result in node.DescendantNodes()
+                     .SelectMany(childNode => _strategies.SelectMany(strategy => strategy.Analyze(childNode, model)))
+                     .Where(result => result.Success))
         {
-            var type = fullyQualifiedClassName?.IsAbstract ?? false
-                ? DependencyType.Extension
-                : DependencyType.Implementation;
-            parsedClass.AddDependency(type, GetDisplayString(fullyQualifiedClassName) ?? "BROKEN <inheritance>");
+            parsedClass.AddDependency(result.Dependency, result.ClassName);
         }
-    }
 
-    private static string? GetDisplayString(ISymbol? baseSymbol) => baseSymbol?.ToDisplayString();
-
-    private static string? GetContainedDisplayString(SymbolInfo symbolInfo) =>
-        GetDisplayString(symbolInfo.Symbol?.ContainingType);
-
-    private static void ParseNew(ClassDeclarationSyntax classDeclaration, SemanticModel? model, Class parsedClass)
-    {
-        foreach (var fullyQualifiedClassName in classDeclaration
-                     .DescendantNodes()
-                     .OfType<ObjectCreationExpressionSyntax>()
-                     .Select(objectCreation => model.GetSymbolInfo(objectCreation))
-                     .Select(GetContainedDisplayString)
-                )
+        foreach (var lambda in node.DescendantNodes().OfType<LambdaExpressionSyntax>())
         {
-            parsedClass.AddDependency(DependencyType.DirectInstantiation,
-                fullyQualifiedClassName ?? "BROKEN <allocation>");
+            AnalyzeNode(lambda.Body, model, parsedClass);
         }
-    }
 
-
-    private static void ParseMethod(ClassDeclarationSyntax classDeclaration, SemanticModel? model, Class parsedClass)
-    {
-        foreach (var invocation in classDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>())
+        foreach (var localFunction in node.DescendantNodes().OfType<LocalFunctionStatementSyntax>()
+                     .Where(localFunction => localFunction.Body != null))
         {
-            var symbolInfo = model.GetSymbolInfo(invocation);
-            string? fullyQualifiedClassName;
-            var type = symbolInfo.Symbol?.IsStatic ?? false
-                ? DependencyType.StaticInvocation
-                : DependencyType.InstanceInvocation;
-            if (symbolInfo.Symbol == null)
-            {
-                type = DependencyType.Special;
-                symbolInfo = model.GetSymbolInfo(invocation.ArgumentList.Arguments.First().Expression);
-                fullyQualifiedClassName = symbolInfo.Symbol?.ToDisplayString();
-            }
-            else
-            {
-                fullyQualifiedClassName = GetContainedDisplayString(symbolInfo);
-            }
-
-            if (fullyQualifiedClassName == null)
-            {
-                throw new SyntaxErrorException(
-                    $"Class name not resolved for {invocation.Expression.ToString()}, did you forget a 'using'?");
-            }
-
-            parsedClass.AddDependency(type, fullyQualifiedClassName);
+            AnalyzeNode(localFunction.Body!, model, parsedClass);
         }
     }
 }
