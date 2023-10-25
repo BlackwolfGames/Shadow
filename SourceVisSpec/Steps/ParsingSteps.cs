@@ -8,30 +8,59 @@ public class ParsingSteps
 {
     private Project _parsed;
 
-    [Given(@"we parse the following code")]
-    public async Task GivenWeParseTheFollowingCode(string sourceCode)
+    [Given(@"we parse '(.*)'")]
+    public async Task GivenWeParseTheFollowingCode(string filename)
     {
-        _parsed = await Parser.ParseFromSource(sourceCode);
+        var finalPath = Directory.GetCurrentDirectory() + "../../../../TestFiles/" + filename;
+        _parsed = await Parser.ParseFromSource(await File.ReadAllTextAsync(finalPath));
     }
 
-    [Then(@"there is (.*) class")]
-    public void ThenThereIsClass(int p0)
+    [Then(@"there (?:is|are) (.*) class(?:es|)")]
+    public void ThenThereIsClass(int ClassCount)
     {
-        Assert.That(_parsed.Classes.Count, Is.EqualTo(1));
+        Assert.That(_parsed.Classes.Count, Is.EqualTo(ClassCount));
     }
-
-    private Func<KeyValuePair<string,T>, bool> ContainsKey<T>(string key)
-    {
-        return pair => Equals(pair.Key, key);
-    }
-    [Then(@"The class '(.*)' depends on '(.*)' as (.*) (.*) times?")]
-    public void ThenTheClassDependsOnTimes(string className, string dependencyName, DependencyType type, int dependencyCount)
+    [Then(@"there is a class named '(.*)'")]
+    public void ThenThereIsAClassNamed(string className)
     {
         Assert.That(_parsed.Classes.Select(pair => pair.Key), Contains.Item(className));
-        Assert.That(_parsed.Classes.First(ContainsKey<Class>(className)).Value.Dependencies.Select(pair => pair.Key), Contains.Item(dependencyName));
+    }
+
+    [Then(@"The class '(.*)' depends on '(.*)' as (.*) (.*) times?")]
+    public void ThenTheClassDependsOnAsTimeS(string className, string dependencyName, DependencyType type, int dependencyCount)
+    {
         Assert.That(
             _parsed.Classes.First(ContainsKey<Class>(className)).Value
                 .Dependencies.First(ContainsKey<Dependency>(dependencyName)).Value[type],
             Is.EqualTo(dependencyCount));
+    }
+
+    [Then(@"The class '(.*)' depends on '(.*)' (.*) times?")]
+    public void ThenTheClassDependsOnTime(string className, string dependencyName, int dependencyCount)
+    {
+        Assert.That(
+            _parsed.Classes.First(ContainsKey<Class>(className)).Value
+                .Dependencies.First(ContainsKey<Dependency>(dependencyName)).Value.Total,
+            Is.EqualTo(dependencyCount));
+    }
+
+    [Then(@"The class '(.*)' has (.*) dependenc(?:y|ies)")]
+    public void ThenTheClassHasDependency(string className, int dependencyCount)
+    {
+        Assert.That(
+            _parsed.Classes.First(ContainsKey<Class>(className)).Value
+                .Dependencies.Count(),
+            Is.EqualTo(dependencyCount));
+    }
+
+    [Then(@"The class '(.*)' uses '(.*)'")]
+    public void ThenTheClassDependsOn(string className, string dependencyName)
+    {
+        Assert.That(_parsed.Classes.First(ContainsKey<Class>(className)).Value.Dependencies.Select(pair => pair.Key), Contains.Item(dependencyName));
+    }
+    
+    private static Func<KeyValuePair<string,T>, bool> ContainsKey<T>(string key)
+    {
+        return pair => Equals(pair.Key, key);
     }
 }
