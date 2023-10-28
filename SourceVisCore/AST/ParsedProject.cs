@@ -13,7 +13,6 @@ public class Project
 
     public void Print()
     {
-        
         foreach (var parsedClass in _classes)
         {
             Console.WriteLine($" -- Class: {parsedClass.Key}");

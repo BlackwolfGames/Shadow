@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SourceVisCore.AST.Dependencies;
 
-public class InstantiatesAnalysis : SubStrategy<ObjectCreationExpressionSyntax>
+public class InstantiatesAnalysis : DependencyStrategy<ObjectCreationExpressionSyntax>
 {
-    protected override AnalysisResult[] Analyze(ObjectCreationExpressionSyntax invocation, SemanticModel model)
+    protected override IEnumerable<AnalysisResult> Analyze(ObjectCreationExpressionSyntax invocation, SemanticModel model)
     {
         var symbol = model.GetSymbolInfo(invocation);
         return new[]
