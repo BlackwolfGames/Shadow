@@ -1,5 +1,7 @@
-﻿using System.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
@@ -7,17 +9,12 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 using SourceVisCore.AST.Dependencies;
+using SourceVisCore.AST.ParserPatterns;
 
 namespace SourceVisCore.AST;
 
 public static class Parser
 {
-    private static readonly IAnalysisStrategy[] _strategies = {
-        new InvokesAnalysis(),
-        new InstantiatesAnalysis(),
-        new InheritAnalysis()
-    };
-
     public static async Task<Solution> Parse(string solutionPath)
     {
         var instances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
@@ -56,44 +53,44 @@ public static class Parser
             .ToList();
 
         var compilation = CSharpCompilation.Create("MyCompilation")
+            .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
             .AddReferences(references)
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceCode));
 
+        var diagnostics = compilation.GetDiagnostics();
+        if (diagnostics.Any())
+            throw new ValidationException(diagnostics
+                .Select(diagnostic => diagnostic.ToString())
+                .Aggregate((s1, s2) => s1 + "\n-=-\n" + s2));
+        
         var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
         var returned = new Project();
         ParseFile(compilation.SyntaxTrees.First().GetCompilationUnitRoot(), semanticModel, returned);
         return returned;
     }
 
-    private static void ParseFile(CompilationUnitSyntax root, SemanticModel model, Project parsedProject)
+    private static IEnumerable<IAnalysisStrategy> GatherStrategies()
     {
-        foreach (var classDeclaration in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
+        var type = typeof(IAnalysisStrategy);
+        return Assembly.GetExecutingAssembly().GetTypes()
+            .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract)
+            .Select(Activator.CreateInstance)
+            .Cast<IAnalysisStrategy>();
+    }
+
+    private static void ParseFile(SyntaxNode root, SemanticModel model, Project parsedProject)
+    {
+        var strategies = GatherStrategies().ToArray();
+        foreach (var node in root.DescendantNodes())
         {
+            if (node is not TypeDeclarationSyntax classDeclaration) continue;
+
             var symbol = model.GetDeclaredSymbol(classDeclaration);
             var fullyQualifiedClassName = symbol?.ToDisplayString();
             var parsedClass = parsedProject.AddClass(fullyQualifiedClassName ?? classDeclaration.Identifier.ValueText);
-            AnalyzeNode(classDeclaration, model, parsedClass);
-        }
-        
-    }
-    private static void AnalyzeNode(SyntaxNode node, SemanticModel model, Class parsedClass)
-    {
-        foreach (var result in node.DescendantNodes()
-                     .SelectMany(childNode => _strategies.SelectMany(strategy => strategy.Analyze(childNode, model)))
-                     .Where(result => result.Success))
-        {
-            parsedClass.AddDependency(result.Dependency, result.ClassName);
-        }
 
-        foreach (var lambda in node.DescendantNodes().OfType<LambdaExpressionSyntax>())
-        {
-            AnalyzeNode(lambda.Body, model, parsedClass);
-        }
-
-        foreach (var localFunction in node.DescendantNodes().OfType<LocalFunctionStatementSyntax>()
-                     .Where(localFunction => localFunction.Body != null))
-        {
-            AnalyzeNode(localFunction.Body!, model, parsedClass);
+            var visitor = new DependencyAnalysisVisitor(model, strategies, parsedClass);
+            visitor.Visit(classDeclaration);
         }
     }
 }

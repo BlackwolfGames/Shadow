@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SourceVisCore.AST.Dependencies;
 
-public class InheritAnalysis : SubStrategy<ClassDeclarationSyntax>
+public class InheritAnalysis : DependencyStrategy<ClassDeclarationSyntax>
 {
-    protected override AnalysisResult[] Analyze(ClassDeclarationSyntax invocation, SemanticModel model)
+    protected override IEnumerable<AnalysisResult> Analyze(ClassDeclarationSyntax invocation, SemanticModel model)
     {
         return invocation.BaseList == null
             ? new[] {new AnalysisResult()}

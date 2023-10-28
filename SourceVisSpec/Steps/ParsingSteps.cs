@@ -36,7 +36,7 @@ public class ParsingSteps
     }
 
     [Then(@"The class '(.*)' depends on '(.*)' (.*) times?")]
-    public void ThenTheClassDependsOnTime(string className, string dependencyName, int dependencyCount)
+    public void ThenTheClassDependsOnTimes(string className, string dependencyName, int dependencyCount)
     {
         Assert.That(
             _parsed.Classes.First(ContainsKey<Class>(className)).Value
@@ -44,8 +44,9 @@ public class ParsingSteps
             Is.EqualTo(dependencyCount));
     }
 
-    [Then(@"The class '(.*)' has (.*) dependenc(?:y|ies)")]
-    public void ThenTheClassHasDependency(string className, int dependencyCount)
+    [Then(@"The class '(.*)' has (.*) dependency")]
+    [Then(@"The class '(.*)' has (.*) dependencies")]
+    public void ThenTheClassHasDependencies(string className, int dependencyCount)
     {
         Assert.That(
             _parsed.Classes.First(ContainsKey<Class>(className)).Value
@@ -54,7 +55,7 @@ public class ParsingSteps
     }
 
     [Then(@"The class '(.*)' uses '(.*)'")]
-    public void ThenTheClassDependsOn(string className, string dependencyName)
+    public void ThenTheClassUses(string className, string dependencyName)
     {
         Assert.That(_parsed.Classes.First(ContainsKey<Class>(className)).Value.Dependencies.Select(pair => pair.Key), Contains.Item(dependencyName));
     }

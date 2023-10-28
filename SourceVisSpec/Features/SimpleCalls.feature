@@ -26,11 +26,11 @@ Scenario: Parser can read classes
 		And The class 'HelloWorld.TestMultipleCalls' depends on 'System.Console' 3 times
 		And The class 'HelloWorld.TestMultipleCalls' depends on 'System.Console' as StaticInvocation 3 times 
 		
-	Scenario: Parser hides calls within lambdas
+	Scenario: Parser finds calls within lambdas and local functions
 		Given we parse 'Calls/TestCallInLambda.cs'
 		Then there is 1 class
 		Then there is a class named 'HelloWorld.TestCallInLambda'
-		And The class 'HelloWorld.TestCallInLambda' has 2 dependencies
+		And The class 'HelloWorld.TestCallInLambda' has 3 dependencies
 		And The class 'HelloWorld.TestCallInLambda' uses 'System.Action'
 		And The class 'HelloWorld.TestCallInLambda' depends on 'System.Action' 1 times
 		And The class 'HelloWorld.TestCallInLambda' depends on 'System.Action' as InstanceInvocation 1 times 
@@ -38,3 +38,6 @@ Scenario: Parser can read classes
 		And The class 'HelloWorld.TestCallInLambda' depends on 'HelloWorld.TestCallInLambda' 2 times
 		And The class 'HelloWorld.TestCallInLambda' depends on 'HelloWorld.TestCallInLambda' as StaticInvocation 1 times 
 		And The class 'HelloWorld.TestCallInLambda' depends on 'HelloWorld.TestCallInLambda' as InstanceInvocation 1 times 
+		And The class 'HelloWorld.TestCallInLambda' uses 'System.Console'
+		And The class 'HelloWorld.TestCallInLambda' depends on 'System.Console' 3 times
+		And The class 'HelloWorld.TestCallInLambda' depends on 'System.Console' as StaticInvocation 3 times 

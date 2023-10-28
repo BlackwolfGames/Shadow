@@ -4,9 +4,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SourceVisCore.AST.Dependencies;
 
-public class InvokesAnalysis : SubStrategy<InvocationExpressionSyntax>
+public class InvokesAnalysis : DependencyStrategy<InvocationExpressionSyntax>
 {
-    protected override AnalysisResult[] Analyze(InvocationExpressionSyntax invocation, SemanticModel model)
+    protected override IEnumerable<AnalysisResult> Analyze(InvocationExpressionSyntax invocation, SemanticModel model)
     {
         var symbolInfo = model.GetSymbolInfo(invocation);
         string? fullyQualifiedClassName;

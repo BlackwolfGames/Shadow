@@ -1,13 +1,14 @@
-﻿namespace HelloWorld;
+﻿using System;
+namespace HelloWorld;
 
 public class TestCallInLambda
 {
     public void RunLambda()
     {
-        var temp =() => { Console.WriteLine("Test"); };
+        var temp = () => { Console.WriteLine("Test"); };
         temp();
     }
-    
+
     public void RunLocalStaticFunction()
     {
         Temp();
@@ -17,7 +18,7 @@ public class TestCallInLambda
             Console.WriteLine("Test");
         }
     }
-    
+
     public void RunLocalInstanceFunction()
     {
         Temp();
