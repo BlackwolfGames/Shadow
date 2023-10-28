@@ -2,14 +2,14 @@
 
 namespace HelloWorld;
 
-public class TestMultipleCalls
+public static class TestMultipleCalls
 {
-    public void Function_1(object? o, EventArgs a)
+    public static void Function_1()
     {
         Write("asdf");
         WriteLine("asdf3");
     }
-    public void Func2(object? o, EventArgs a)
+    public static void Func2()
     {
         Clear();
     }

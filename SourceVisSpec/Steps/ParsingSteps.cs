@@ -6,19 +6,19 @@ namespace SourceVisSpec.Steps;
 [Binding]
 public class ParsingSteps
 {
-    private Project _parsed;
+    private Project _parsed = new();
 
     [Given(@"we parse '(.*)'")]
     public async Task GivenWeParseTheFollowingCode(string filename)
     {
         var finalPath = Directory.GetCurrentDirectory() + "../../../../TestFiles/" + filename;
-        _parsed = await Parser.ParseFromSource(await File.ReadAllTextAsync(finalPath));
+        _parsed = Parser.ParseFromSource(await File.ReadAllTextAsync(finalPath));
     }
 
     [Then(@"there (?:is|are) (.*) class(?:es|)")]
-    public void ThenThereIsClass(int ClassCount)
+    public void ThenThereIsClass(int classCount)
     {
-        Assert.That(_parsed.Classes.Count, Is.EqualTo(ClassCount));
+        Assert.That(_parsed.Classes.Count, Is.EqualTo(classCount));
     }
     [Then(@"there is a class named '(.*)'")]
     public void ThenThereIsAClassNamed(string className)

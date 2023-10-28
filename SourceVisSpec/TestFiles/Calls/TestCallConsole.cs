@@ -1,13 +1,10 @@
 ﻿using System;
-namespace HelloWorld
+namespace HelloWorld;
+
+public static class TestCallConsole
 {
-    // ReSharper disable once UnusedType.Global
-    partial class TestCallConsole
+    public static void Run(object? o, EventArgs a)
     {
-        // ReSharper disable once UnusedMember.Local
-        void Run(object? o, EventArgs a)
-        {
-            Console.WriteLine("Hello, World!");
-        }
+        Console.WriteLine("Hello, World!");
     }
 }

@@ -1,15 +1,15 @@
 ﻿using System;
 namespace HelloWorld;
 
-public class TestCallInLambda
+public static class TestCallInLambda
 {
-    public void RunLambda()
+    public static void RunLambda()
     {
         var temp = () => { Console.WriteLine("Test"); };
         temp();
     }
 
-    public void RunLocalStaticFunction()
+    public static void RunLocalStaticFunction()
     {
         Temp();
 
@@ -19,7 +19,7 @@ public class TestCallInLambda
         }
     }
 
-    public void RunLocalInstanceFunction()
+    public static void RunLocalInstanceFunction()
     {
         Temp();
 
