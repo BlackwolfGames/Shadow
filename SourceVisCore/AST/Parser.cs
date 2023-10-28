@@ -44,7 +44,7 @@ public static class Parser
         return parsedSolution;
     }
 
-    public static async Task<Project> ParseFromSource(string sourceCode)
+    public static Project ParseFromSource(string sourceCode)
     {
         var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         var references = loadedAssemblies
@@ -58,11 +58,11 @@ public static class Parser
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceCode));
 
         var diagnostics = compilation.GetDiagnostics();
-        if (diagnostics.Any())
+        if (diagnostics.Any(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error))
             throw new ValidationException(diagnostics
                 .Select(diagnostic => diagnostic.ToString())
                 .Aggregate((s1, s2) => s1 + "\n-=-\n" + s2));
-        
+
         var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
         var returned = new Project();
         ParseFile(compilation.SyntaxTrees.First().GetCompilationUnitRoot(), semanticModel, returned);

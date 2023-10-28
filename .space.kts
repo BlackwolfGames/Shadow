@@ -152,8 +152,8 @@ job("Weekly stress test") {
         shellScript {
             content = """
             apt update
-            apt install -y openjdk-11-jdk
-            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+            apt install -y openjdk-21-jdk
+            export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
             
               # Installing livingdoc and specflow tools via dotnet
               export PATH="${'$'}PATH:/root/.dotnet/tools:${'$'}JAVA_HOME/bin"
