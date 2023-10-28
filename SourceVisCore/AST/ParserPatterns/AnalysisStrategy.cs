@@ -30,3 +30,17 @@ public abstract class DependencyStrategy<T> : IAnalysisStrategy where T : Syntax
 
     public bool ShouldAnalyze(SyntaxNode node) => node is T;
 }
+
+public class IgnoredNodes : IAnalysisStrategy
+{
+    private readonly IEnumerable<Type> _ignoredTypes = new[]
+    {
+        typeof(StructDeclarationSyntax),
+        typeof(InterfaceDeclarationSyntax),
+    };
+
+    public bool ShouldAnalyze(SyntaxNode node) => _ignoredTypes.Contains(node.GetType());
+
+    public IEnumerable<AnalysisResult> Analyze(SyntaxNode node, SemanticModel model) => 
+        Array.Empty<AnalysisResult>();
+}

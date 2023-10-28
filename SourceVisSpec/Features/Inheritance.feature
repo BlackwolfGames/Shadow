@@ -1,12 +1,15 @@
 ﻿Feature: AST parser - Inheritance
-	Simple calculator for adding two numbers
-
-	Scenario: Parser can detect static calls
-		Given we parse 'Inheritance/TestCallMultipleClass.cs'
-		Then there are 2 classes
-		Then there is a class named 'HelloWorld.TestCallMultipleClass1'
-		Then there is a class named 'HelloWorld.TestCallMultipleClass2'
-		And The class 'HelloWorld.TestCallMultipleClass1' has 1 dependency 
-		And The class 'HelloWorld.TestCallMultipleClass1' uses 'System.Console'
-		And The class 'HelloWorld.TestCallMultipleClass2' has 1 dependency 
-		And The class 'HelloWorld.TestCallMultipleClass2' uses 'System.Console'
+			
+	Scenario: Parser can read inheritance, and ignores transient dependencies
+		Given we parse 'Inheritance/TestInheritance.cs'
+		Then there are 4 classes
+		Then there is a class named 'Inheritance.TestInheritance'
+		Then there is a class named 'Inheritance.ITestInterface'
+		Then there is a class named 'Inheritance.TestAbstractBase'
+		Then there is a class named 'Inheritance.TestDerived'
+		And The class 'Inheritance.TestInheritance' has 1 dependency 
+		And The class 'Inheritance.TestInheritance' uses 'Inheritance.ITestInterface' as Implementation 1 time
+		And The class 'Inheritance.TestAbstractBase' has 1 dependency 
+		And The class 'Inheritance.TestAbstractBase' uses 'Inheritance.ITestInterface' as Implementation 1 time
+		And The class 'Inheritance.TestDerived' has 1 dependencies 
+		And The class 'Inheritance.TestDerived' uses 'Inheritance.TestAbstractBase' as Extension 1 time

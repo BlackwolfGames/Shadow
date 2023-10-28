@@ -4,9 +4,16 @@ public class Dependency
 {
     private readonly Dictionary<DependencyType, int> _types = new();
 
+    public Dependency()
+    {
+        foreach (var dependencyType in Enum.GetValues<DependencyType>())
+        {
+            _types.TryAdd(dependencyType, 0);
+        }
+    }
+
     public void Add(DependencyType type)
     {
-        _types.TryAdd(type, 0);
         _types[type]++;
     }
 
@@ -19,11 +26,13 @@ public enum DependencyType
 {
     Invalid,
     DirectInstantiation,
-    ConstructorInjection,
-    MethodInjection,
-    FieldInjection,
+    ParameterInjection,
+    VariableDeclaration,
+    ReturnType,
+    Exception,
     Typecast,
     SafeCast,
+    ImplicitConversion,
     Extension,
     Implementation,
     InstanceInvocation,

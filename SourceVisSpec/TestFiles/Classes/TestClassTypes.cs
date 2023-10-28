@@ -1,17 +1,17 @@
 ﻿namespace HelloWorld
 {
-    partial class TestBlankClass
+    static partial class TestClass
     {
         //deliberately empty
     }
-    struct TestBlankStruct
+    struct TestStruct
     {
         //deliberately empty
     }
-    interface ITestBlankInterface
+    interface ITestInterface
     {
         //deliberately empty
     }
 
-    partial record TestBlankRecord();
+    partial record TestRecord();
 }

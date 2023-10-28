@@ -1,18 +1,16 @@
 ﻿using System;
+
 namespace HelloWorld
 {
-   partial class TestCallMultipleClass1
+    public static partial class TestCallMultipleClass1
     {
-        protected TestCallMultipleClass1()
-        {
-            
-        }
-        static void Run(object? o, EventArgs a)
+        public static void Run()
         {
             Console.WriteLine("Hello, World!");
         }
     }
-    struct TestCallMultipleClass2
+
+    internal struct TestCallMultipleClass2
     {
         public TestCallMultipleClass2()
         {
