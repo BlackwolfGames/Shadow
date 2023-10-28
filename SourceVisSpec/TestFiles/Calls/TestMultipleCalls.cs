@@ -1,5 +1,4 @@
 ﻿using static System.Console;
-
 namespace HelloWorld;
 
 public static class TestMultipleCalls

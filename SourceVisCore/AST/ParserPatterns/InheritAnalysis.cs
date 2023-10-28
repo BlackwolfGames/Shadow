@@ -17,8 +17,16 @@ public class InheritAnalysis : DependencyStrategy<ClassDeclarationSyntax>
             .ToArray();
     }
 
-    private static DependencyType DependencyTypeOf(ISymbol fullyQualifiedClassName) =>
-        fullyQualifiedClassName.IsAbstract
-            ? DependencyType.Extension
-            : DependencyType.Implementation;
+    private static DependencyType DependencyTypeOf(ITypeSymbol fullyQualifiedClassName)
+    {
+        if (fullyQualifiedClassName is not INamedTypeSymbol namedTypeSymbol)
+            return DependencyType.Invalid; // Assume you have an "Unknown" enum value or similar
+
+        return namedTypeSymbol.TypeKind switch
+        {
+            TypeKind.Interface => DependencyType.Implementation,
+            TypeKind.Class => DependencyType.Extension,
+            _ => DependencyType.Invalid
+        };
+    }
 }

@@ -3,7 +3,7 @@ namespace HelloWorld;
 
 public static class TestCallConsole
 {
-    public static void Run(object? o, EventArgs a)
+    public static void Run()
     {
         Console.WriteLine("Hello, World!");
     }

@@ -7,7 +7,7 @@ public class InstantiatesAnalysis : DependencyStrategy<ObjectCreationExpressionS
 {
     protected override IEnumerable<AnalysisResult> Analyze(ObjectCreationExpressionSyntax invocation, SemanticModel model)
     {
-        var symbol = model.GetSymbolInfo(invocation);
+        var symbol = model.GetSymbolInfo(invocation.Type);
         return new[]
         {
             new AnalysisResult(true, DependencyType.DirectInstantiation,
