@@ -8,31 +8,15 @@ namespace SourceVisSpec.Steps;
 public class ParsingSteps : LogHelper
 {
     private Project _parsed = new();
-    private string _classPrefix;
-    private string _dependencyPrefix;
 
     [Given(@"we parse '(.*)'")]
     public async Task GivenWeParseTheFollowingCode(string filename)
     {
         var finalPath = Directory.GetCurrentDirectory() + "../../../../TestFiles/" + filename;
         _parsed = Parser.ParseFromSource(await File.ReadAllTextAsync(finalPath));
-        _classPrefix = "";
-        _dependencyPrefix = "";
     }
 
-    [When(@"we prefix classnames with '(.*)'")]
-    public void wePrefixClassnamesWith(string prefix)
-    {
-        _classPrefix = prefix;
-    }
-
-    [When(@"we prefix dependencies with '(.*)'")]
-    public void wePrefixDependenciesWith(string prefix)
-    {
-        _dependencyPrefix = prefix;
-    }
-
-    [Then(@"there (?:is|are) (.*) class(?:es|)")]
+    [Then(@"there (?:is|are) (\d*) class(?:es|)")]
     public void ThenThereIsClass(int classCount)
     {
         LogAssert(() => Assert.That(_parsed.Classes.Count, Is.EqualTo(classCount)));
@@ -41,40 +25,46 @@ public class ParsingSteps : LogHelper
     [Then(@"there is a class named '(.*)'")]
     public void ThenThereIsAClassNamed(string className)
     {
-        LogAssert(() => Assert.That(_parsed.Classes.Select(pair => pair.Key), Contains.Item(_classPrefix + className)));
+        LogAssert(() => Assert.That(_parsed.Classes.Select(pair => pair.Key.Split('.')[^1]),
+            Contains.Item(className.Split('.')[^1])));
     }
 
-    [Then(@"The class '(.*)' uses '(.*)' as (.*) (.*) times?")]
+    [Then(@"The class '(.*)' uses '(.*)' as (.*) (\d*) times?")]
     public void ThenTheClassDependsOnAsTimeS(string className, string dependencyName, DependencyType type,
         int dependencyCount)
     {
         LogAssert(() => Assert.That(
-            _parsed.Classes.First(ContainsKey<Class>(_classPrefix + className)).Value
-                .Dependencies.First(ContainsKey<Dependency>(_dependencyPrefix + dependencyName)).Value[type],
+            _parsed.Classes.First(ContainsKey<Class>(className)).Value
+                .Dependencies.First(ContainsKey<Dependency>(dependencyName)).Value[type],
             Is.EqualTo(dependencyCount)));
     }
 
-    [Then(@"The class '(.*)' uses '(.*)' (.*) times?")]
+    [Then(@"The class '(.*)' uses '(.*)' (\d*) times?")]
     public void ThenTheClassDependsOnTimes(string className, string dependencyName, int dependencyCount)
     {
         LogAssert(() => Assert.That(
-            _parsed.Classes.First(ContainsKey<Class>(_classPrefix + className)).Value
-                .Dependencies.First(ContainsKey<Dependency>(_dependencyPrefix + dependencyName)).Value.Total,
+            _parsed.Classes.First(ContainsKey<Class>(className)).Value
+                .Dependencies.First(ContainsKey<Dependency>(dependencyName)).Value.Total,
             Is.EqualTo(dependencyCount)));
     }
 
-    [Then(@"The class '(.*)' has (.*) dependency")]
-    [Then(@"The class '(.*)' has (.*) dependencies")]
+    [Then(@"The class '(.*)' has (\d*) dependency")]
+    [Then(@"The class '(.*)' has (\d*) dependencies")]
     public void ThenTheClassHasDependencies(string className, int dependencyCount)
     {
         LogAssert(() => Assert.That(
-            _parsed.Classes.First(ContainsKey<Class>(_classPrefix + className)).Value
+            _parsed.Classes.First(ContainsKey<Class>(className)).Value
                 .Dependencies.Count(),
             Is.EqualTo(dependencyCount)));
     }
 
     private static Func<KeyValuePair<string, T>, bool> ContainsKey<T>(string key)
     {
-        return pair => Equals(pair.Key, key);
+        return pair =>
+        {
+            var rhs = key.Split('.')[^1];
+            var lhs = pair.Key.Split('.')[^1];
+            return lhs.Equals(rhs);
+        };
     }
 }

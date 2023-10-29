@@ -11,14 +11,21 @@ public class BinaryExpressionAnalysis : DependencyStrategy<BinaryExpressionSynta
     protected override IEnumerable<AnalysisResult> Analyze(BinaryExpressionSyntax invocation, SemanticModel model)
     {
         var kind = invocation.Kind();
-        if (kind != SyntaxKind.AsExpression) throw new EvaluateException("Unknown binary expression kind: " + kind);
-
-        var symbol = ModelExtensions.GetSymbolInfo(model, invocation.Right);
-
-        return new[]
+        switch (kind)
         {
-            new AnalysisResult(true, DependencyType.SafeCast,
-                symbol.Symbol?.ToDisplayString() ?? "BROKEN <ParameterInjection>")
-        };
+            case SyntaxKind.AsExpression:
+
+
+                var symbol = ModelExtensions.GetSymbolInfo(model, invocation.Right);
+
+                return new[]
+                {
+                    new AnalysisResult(true, DependencyType.SafeCast,
+                        symbol.Symbol?.ToDisplayString() ?? "BROKEN <ParameterInjection>")
+                };
+            default:
+                Console.WriteLine("Unhandled binary expression: " + kind);
+                return Enumerable.Empty<AnalysisResult>();
+        }
     }
 }
