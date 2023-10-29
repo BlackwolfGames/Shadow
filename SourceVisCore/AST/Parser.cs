@@ -81,16 +81,34 @@ public static class Parser
     private static void ParseFile(SyntaxNode root, SemanticModel model, Project parsedProject)
     {
         var strategies = GatherStrategies().ToArray();
+
+        // Function to process any type-like construct
+        void ProcessType(SymbolDisplayFormat format, ISymbol symbol, SyntaxNode node)
+        {
+            var fullyQualifiedName = symbol?.ToDisplayString(format);
+            var parsedClass = parsedProject.AddClass(fullyQualifiedName ?? node.GetFirstToken().ValueText);
+            var visitor = new DependencyAnalysisVisitor(model, strategies, parsedClass);
+            visitor.Visit(node);
+        }
+
         foreach (var node in root.DescendantNodes())
         {
-            if (node is not TypeDeclarationSyntax classDeclaration) continue;
-
-            var symbol = model.GetDeclaredSymbol(classDeclaration);
-            var fullyQualifiedClassName = symbol?.ToDisplayString();
-            var parsedClass = parsedProject.AddClass(fullyQualifiedClassName ?? classDeclaration.Identifier.ValueText);
-
-            var visitor = new DependencyAnalysisVisitor(model, strategies, parsedClass);
-            visitor.Visit(classDeclaration);
+            switch (node)
+            {
+                case TypeDeclarationSyntax classDeclaration:
+                {
+                    var symbol = model.GetDeclaredSymbol(classDeclaration);
+                    ProcessType(SymbolDisplayFormat.FullyQualifiedFormat, symbol, classDeclaration);
+                    break;
+                }
+                case DelegateDeclarationSyntax delegateDeclaration:
+                {
+                    var symbol = model.GetDeclaredSymbol(delegateDeclaration);
+                    ProcessType(SymbolDisplayFormat.FullyQualifiedFormat, symbol, delegateDeclaration);
+                    break;
+                }
+            }
         }
     }
+
 }

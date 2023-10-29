@@ -14,14 +14,12 @@ public class BinaryExpressionAnalysis : DependencyStrategy<BinaryExpressionSynta
         switch (kind)
         {
             case SyntaxKind.AsExpression:
-
-
                 var symbol = ModelExtensions.GetSymbolInfo(model, invocation.Right);
 
                 return new[]
                 {
                     new AnalysisResult(true, DependencyType.SafeCast,
-                        symbol.Symbol?.ToDisplayString() ?? "BROKEN <ParameterInjection>")
+                        symbol.Symbol?.ToDisplayString() ?? "BROKEN <SafeCast>")
                 };
             default:
                 Console.WriteLine("Unhandled binary expression: " + kind);

@@ -1,40 +1,27 @@
 ﻿using System;
 namespace SourceVisSpec.TestFiles.Generics;
-
-
-public interface IGenericInterface<T>
-{
+public interface IGenericInterface<T> {
     T Prop { get; }
     T Get(T bla);
 }
-
-
-public class TestGenerics : IGenericInterface<string>
-{
+public class TestGenerics : IGenericInterface<string> {
     public string Prop { get; } = "Tets";
     public string Get(string bla) => throw new NotSupportedException();
 }
-
-public class GenericClass <T>
-{
-    public T blah1(T usage)
-    {
+public class GenericClass <T> {
+    public T blah1(T usage) {
         return usage;
     }
-    public U blah2<U>(U usage)
-    {
+    public U blah2<U>(U usage) {
         return usage;
     }
 }
-
-public class GenericsUsage
-{
-    public void Blah()
-    {
+public class GenericsUsage {
+    public void Blah() {
         GenericClass<int> gc = new();
         TestGenerics tg = new();
         gc.blah1(4);
-        gc.blah2(4.5);
+        gc.blah2<double>(4.5f);
         tg.Get("hello");
     }
 }

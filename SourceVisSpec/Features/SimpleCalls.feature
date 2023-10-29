@@ -21,10 +21,11 @@
 		Given we parse 'Calls/TestCallInLambda.cs'
 		Then there is 1 class
 		Then there is a class named 'TestCallInLambda'
-		And The class 'TestCallInLambda' has 4 dependencies
-		And The class 'TestCallInLambda' uses 'Action' 2 times
+		And The class 'TestCallInLambda' has 3 dependencies
+		And The class 'TestCallInLambda' uses 'Action' 3 times
 		And The class 'TestCallInLambda' uses 'Action' as InstanceInvocation 1 times 
 		And The class 'TestCallInLambda' uses 'Action' as VariableDeclaration 1 times 
+		And The class 'TestCallInLambda' uses 'Action' as DelegateInvocation 1 times 
 		And The class 'TestCallInLambda' uses 'TestCallInLambda' 2 times
 		And The class 'TestCallInLambda' uses 'TestCallInLambda' as StaticInvocation 1 times 
 		And The class 'TestCallInLambda' uses 'TestCallInLambda' as InstanceInvocation 1 times 
