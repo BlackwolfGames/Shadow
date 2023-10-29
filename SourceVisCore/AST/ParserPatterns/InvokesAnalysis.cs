@@ -9,30 +9,33 @@ public class InvokesAnalysis : DependencyStrategy<InvocationExpressionSyntax>
     protected override IEnumerable<AnalysisResult> Analyze(InvocationExpressionSyntax invocation, SemanticModel model)
     {
         var symbolInfo = model.GetSymbolInfo(invocation);
-        string? fullyQualifiedClassName;
-        var type = symbolInfo.Symbol?.IsStatic ?? false
-            ? DependencyType.StaticInvocation
-            : DependencyType.InstanceInvocation;
-        if (symbolInfo.Symbol == null)
+
+        if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
         {
-            type = DependencyType.Special;
-            symbolInfo = model.GetSymbolInfo(invocation.ArgumentList.Arguments.First().Expression);
-            fullyQualifiedClassName = symbolInfo.Symbol?.ToDisplayString();
-        }
-        else
-        {
-            fullyQualifiedClassName = symbolInfo.Symbol?.ContainingType.ToDisplayString();
+            // Handle the special case or error
+            yield break;
         }
 
-        if (fullyQualifiedClassName == null)
+        var fullyQualifiedClassName = methodSymbol.ContainingType.ToDisplayString();
+    
+        // Check if the method belongs to a delegate type
+        if (methodSymbol.ContainingType.TypeKind == TypeKind.Delegate)
         {
-            return new[]
+            yield return new AnalysisResult(true, DependencyType.DelegateInvocation, fullyQualifiedClassName);
+        }
+
+        // Analyzing the generic type arguments if the method is generic
+        if (methodSymbol.IsGenericMethod)
+        {
+            foreach (var typeArgument in methodSymbol.TypeArguments)
             {
-                new AnalysisResult(false, DependencyType.Invalid,
-                    $"Class name not resolved for {invocation.Expression.ToString()}, did you forget a 'using'?")
-            };
+                yield return new AnalysisResult(true, DependencyType.GenericMethod,
+                    typeArgument.ToDisplayString());
+            }
         }
 
-        return new[] {new AnalysisResult(true, type, fullyQualifiedClassName)};
+        // Continue with other analysis steps, such as detecting whether it's a static or instance invocation.
+        var type = methodSymbol.IsStatic ? DependencyType.StaticInvocation : DependencyType.InstanceInvocation;
+        yield return new AnalysisResult(true, type, fullyQualifiedClassName);
     }
 }
