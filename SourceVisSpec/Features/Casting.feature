@@ -3,8 +3,6 @@
 
 	Scenario: Parser tracks type casting
 		Given we parse 'Casting/TestTypecasting.cs'
-		When we prefix classnames with 'SourceVisSpec.TestFiles.Casting.'
-		And we prefix dependencies with 'SourceVisSpec.TestFiles.Casting.'
 		Then there are 4 classes
 		Then there is a class named 'TypeA'
 		And The class 'TypeA' has 2 dependencies
