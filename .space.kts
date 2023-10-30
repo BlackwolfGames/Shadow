@@ -91,7 +91,7 @@ job("run tests on commit") {
 job("Weekly stress test") {
     startOn {
     
-        gitPush { enabled = false }
+        gitPush { enabled = true }
         schedule { cron("0 0 * * 6") }
 	}
   git {
@@ -160,6 +160,8 @@ job("Weekly stress test") {
               dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
               dotnet tool install -g dotnet-stryker
               dotnet tool install --global dotnet-sonarscanner
+              dotnet tool install --global dotnet-test-html
+              dotnet tool install --global JetBrains.dotCover.GlobalTool
               
               mkdir artifacts
               cd artifacts
@@ -171,11 +173,13 @@ job("Weekly stress test") {
               dotnet sonarscanner begin \
                 /o:blackwolfgames \
                 /k:BlackwolfGames_Shadow \
-                /d:sonar.host.url=https://sonarcloud.io
+                /d:sonar.host.url=https://sonarcloud.io \
+                /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
               
               # Building and running tests from Analyzers1.Tests
-              dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj
-              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
+              dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj –no-incremental
+              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj --logger html
+              dotnet dotcover test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj --dcReportType=HTML
               
               cd Analyzers1/Analyzers1.Tests
               dotnet stryker
@@ -184,8 +188,9 @@ job("Weekly stress test") {
               cd ../../
               
               # Building and running tests from SourceVisUnit
-              dotnet build SourceVisUnit/SourceVisUnit.csproj
-              dotnet test SourceVisUnit/SourceVisUnit.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
+              dotnet build SourceVisUnit/SourceVisUnit.csproj –no-incremental
+              dotnet test SourceVisUnit/SourceVisUnit.csproj --logger html
+              dotnet dotcover test SourceVisUnit/SourceVisUnit.csproj --dcReportType=HTML
               
               cd SourceVisUnit
               dotnet stryker
@@ -194,8 +199,9 @@ job("Weekly stress test") {
               cd ../
               
               # Building and running tests from SourceVisSpec
-              dotnet build SourceVisSpec/SourceVisSpec.csproj
-              dotnet test SourceVisSpec/SourceVisSpec.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
+              dotnet build SourceVisSpec/SourceVisSpec.csproj –no-incremental
+              dotnet test SourceVisSpec/SourceVisSpec.csproj --logger html
+              dotnet dotcover test SourceVisSpec/SourceVisSpec.csproj --dcReportType=HTML
               
               # Generating living documentation
               cd SourceVisSpec/bin/Debug/net7.0
@@ -209,8 +215,9 @@ job("Weekly stress test") {
               cd ../
               
               # Building and running tests from ShadowTest
-              dotnet build ShadowTest/ShadowTest.csproj
-              dotnet test ShadowTest/ShadowTest.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
+              dotnet build ShadowTest/ShadowTest.csproj –no-incremental
+              dotnet test ShadowTest/ShadowTest.csproj --logger html
+              dotnet dotcover test ShadowTest/ShadowTest.csproj --dcReportType=HTML
               
               cd ShadowTest
               dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
@@ -221,8 +228,9 @@ job("Weekly stress test") {
               cd ../
               
               # Building and running tests from ShadowSpecs
-              dotnet build ShadowSpecs/ShadowSpecs.csproj
-              dotnet test ShadowSpecs/ShadowSpecs.csproj  --logger "junit;LogFileName=test-results.xml" --collect:"XPlat Code Coverage"
+              dotnet build ShadowSpecs/ShadowSpecs.csproj –no-incremental
+              dotnet test ShadowSpecs/ShadowSpecs.csproj --logger html
+              dotnet dotcover test ShadowSpecs/ShadowSpecs.csproj --dcReportType=HTML
               
               # Generating living documentation
               cd ShadowSpecs/bin/Debug/net7.0
@@ -252,7 +260,6 @@ job("Weekly stress test") {
               localPath = "artifacts/Analysis"
               // Don't fail job if build.zip is not found
               optional = false
-              archive = true
               // Target path to artifact in file repository.
               remotePath = "Analysis.zip"
               // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
@@ -266,7 +273,6 @@ job("Weekly stress test") {
           localPath = "artifacts/SourceVis"
           // Don't fail job if build.zip is not found
           optional = false
-          archive = true
           // Target path to artifact in file repository.
           remotePath = "SourceVis.zip"
           // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
@@ -280,7 +286,6 @@ job("Weekly stress test") {
               localPath = "artifacts/Shadow"
               // Don't fail job if build.zip is not found
               optional = false
-              archive = true
               // Target path to artifact in file repository.
               remotePath = "Shadow.zip"
               // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
