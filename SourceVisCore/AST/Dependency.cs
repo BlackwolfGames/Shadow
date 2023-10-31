@@ -49,6 +49,6 @@ public enum DependencyType
     UnsubscribesFromEvent,
     GenericMethod,
     GenericClass,
-    Annotation,
+    Attribute,
     Special,
 }

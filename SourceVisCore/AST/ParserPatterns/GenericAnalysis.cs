@@ -10,7 +10,8 @@ public class GenericsAnalysis : DependencyStrategy<GenericNameSyntax>
     {
         var typeInfo = model.GetTypeInfo(node);
 
-        if (typeInfo.Type is not INamedTypeSymbol {IsGenericType: true} constructedType) yield break;
+        var constructedType = typeInfo.Type as INamedTypeSymbol;
+        if (constructedType is not {IsGenericType: true}) yield break;
 
         foreach (var typeArgument in constructedType.TypeArguments)
         {

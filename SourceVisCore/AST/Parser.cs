@@ -97,6 +97,10 @@ public static class Parser
             {
                 case TypeDeclarationSyntax classDeclaration:
                 {
+                    // Skip nested classes; they will be handled when their parent is processed
+                    if (classDeclaration.Parent is TypeDeclarationSyntax)
+                        break;
+
                     var symbol = model.GetDeclaredSymbol(classDeclaration);
                     ProcessType(SymbolDisplayFormat.FullyQualifiedFormat, symbol, classDeclaration);
                     break;

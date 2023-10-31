@@ -10,14 +10,15 @@ public class InvokesAnalysis : DependencyStrategy<InvocationExpressionSyntax>
     {
         var symbolInfo = model.GetSymbolInfo(invocation);
 
-        if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
+        var methodSymbol = symbolInfo.Symbol as IMethodSymbol;
+        if (methodSymbol == null)
         {
             // Handle the special case or error
             yield break;
         }
 
         var fullyQualifiedClassName = methodSymbol.ContainingType.ToDisplayString();
-    
+
         // Check if the method belongs to a delegate type
         if (methodSymbol.ContainingType.TypeKind == TypeKind.Delegate)
         {

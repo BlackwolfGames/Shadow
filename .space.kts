@@ -257,9 +257,10 @@ job("Weekly stress test") {
               // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
               // Local path to artifact relative to working dir
-              localPath = "artifacts/Analysis"
+              localPath = "artifacts/Analysis/*"
               // Don't fail job if build.zip is not found
               optional = false
+              archive = true
               // Target path to artifact in file repository.
               remotePath = "Analysis.zip"
               // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
@@ -270,9 +271,10 @@ job("Weekly stress test") {
           // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
           // Local path to artifact relative to working dir
-          localPath = "artifacts/SourceVis"
+          localPath = "artifacts/SourceVis/*"
           // Don't fail job if build.zip is not found
           optional = false
+              archive = true
           // Target path to artifact in file repository.
           remotePath = "SourceVis.zip"
           // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
@@ -283,9 +285,10 @@ job("Weekly stress test") {
               // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
               // Local path to artifact relative to working dir
-              localPath = "artifacts/Shadow"
+              localPath = "artifacts/Shadow/*"
               // Don't fail job if build.zip is not found
               optional = false
+              archive = true
               // Target path to artifact in file repository.
               remotePath = "Shadow.zip"
               // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
