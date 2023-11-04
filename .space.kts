@@ -44,13 +44,14 @@
                                     tool_check_and_install JetBrains.dotCover.GlobalTool
                                      
                                      # Create artifacts directories
-                                     mkdir -p artifacts/{Shadow,SourceVis}
+                                     mkdir -p artifacts/ShadowEngine
+                                     mkdir -p artifacts/SourceVis
                                     
                                        dotnet sonarscanner begin \
                                          /o:blackwolfgames \
                                          /k:BlackwolfGames_Shadow \
                                          /d:sonar.host.url=https://sonarcloud.io \
-                                         /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+                                         /d:sonar.cs.dotcover.reportsPaths=**/dotCover.*.html
                                      
                                      dotnet build ShadowEngine.sln --no-incremental -c Debug
                                      # Function for building, testing and collecting coverage and reports
