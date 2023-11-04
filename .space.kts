@@ -32,8 +32,8 @@
                                     # Install necessary tools if not already present
                                     tool_check_and_install() {
                                       local tool_name="$1"
-                                      if ! dotnet tool list -g | grep -q "$tool_name"; then
-                                        dotnet tool install -g "$tool_name"
+                                      if ! dotnet tool list -g | grep -q "${'$'}tool_name"; then
+                                        dotnet tool install -g "${'$'}tool_name"
                                       fi
                                     }
                                     
@@ -116,7 +116,7 @@
                                      package_executable "SourceVis" "Core"
                              
                                      # Finish up
-                                     dotnet sonarscanner end  /d:sonar.cs.dotcover.reportsPaths="${original_dir}/artifacts/${project_name}/CoverageReport${test_type}.html"
+                                     dotnet sonarscanner end 
                                      """.trimIndent()
 
 job("run tests on commit") {
