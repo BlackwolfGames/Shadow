@@ -48,17 +48,19 @@
                                          local project_name="${'$'}1"
                                          local test_type="${'$'}2"  # Unit or Spec
                                          dotnet build src/${'$'}project_name/${'$'}project_name.Core --no-incremental -c Release 
-                                         dotnet test test/${'$'}project_name/${'$'}project_name.${'$'}test_type --logger html
-                                         dotnet dotcover test test/${'$'}project_name/${'$'}project_name.Tests --dcReportType=HTML
+                                         pushd test/${'$'}project_name/${'$'}project_name.${'$'}test_type
+                                         dotnet test --logger html
+                                         dotnet dotcover test --dcReportType=HTML
                                          if [ -z "${'$'}IS_CRON_JOB" ]; then
                                                  # Navigate to the test project directory before running Stryker
-                                                 pushd test/${'$'}project_name/${'$'}project_name.${'$'}test_type
+                                                 
                                                  dotnet stryker
                                                  # Copy the results and navigate back to the original directory
                                                  cp -r StrykerOutput ../../artifacts/${'$'}project_name/MutationReport${'$'}test_type
-                                                 popd
+                                                 
                                              fi
-                                         cp -r TestResults artifacts/${'$'}project_name/TestResults${'$'}test_type
+                                         cp -r TestResults ../../artifacts/${'$'}project_name/TestResults${'$'}test_type
+                                         popd
                                      }
                                      # SourceVis
                                      build_and_test "SourceVis" "Unit"
@@ -71,10 +73,10 @@
                                      # Generate living documentation for SpecFlow projects
                                      generate_living_doc() {
                                          local project_name="${'$'}1"
-                                         cd test/${'$'}project_name/${'$'}project_name.spec/bin/Debug/net7.0
+                                         pushd test/${'$'}project_name/${'$'}project_name.spec/bin/Debug/net7.0
                                          livingdoc test-assembly ${'$'}project_name.Spec.dll -t TestExecution.json
-                                         cp LivingDoc.html artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
-                                         cd -
+                                         cp LivingDoc.html ../../../../../artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
+                                         popd
                                      }
                                      
                                      generate_living_doc "SourceVis"
