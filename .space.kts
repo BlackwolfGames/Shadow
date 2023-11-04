@@ -47,20 +47,36 @@
                                      build_and_test() {
                                          local project_name="${'$'}1"
                                          local test_type="${'$'}2"  # Unit or Spec
-                                         dotnet build src/${'$'}project_name/${'$'}project_name.Core --no-incremental -c Release 
-                                         pushd test/${'$'}project_name/${'$'}project_name.${'$'}test_type
-                                         dotnet test --logger html
-                                         dotnet dotcover test --dcReportType=HTML
-                                         if [ -z "${'$'}IS_CRON_JOB" ]; then
-                                                 # Navigate to the test project directory before running Stryker
-                                                 
+                                         local original_dir=${'$'}(pwd) # Save the original directory path
+                                     
+                                         # Build the project in Release configuration
+                                         dotnet build "src/${'$'}{project_name}/${'$'}{project_name}.Core" --no-incremental -c Release 
+                                     
+                                         # Define the test project path
+                                         local test_project_path="test/${'$'}{project_name}/${'$'}{project_name}.${'$'}{test_type}"
+                                     
+                                         # Check if the test project directory exists before attempting to test
+                                         if [ -d "${'$'}test_project_path" ]; then
+                                             # Navigate to the test project directory
+                                             cd "${'$'}test_project_path" || return 1
+                                     
+                                             # Run tests and collect coverage
+                                             dotnet test --no-build --logger "html;LogFileName=TestResults.html" -c Release --results-directory "${original_dir}/artifacts/${project_name}/TestResults${test_type}"
+                                             dotnet dotcover test --no-build --dcReportType="HTML" --dcOutput="${original_dir}/artifacts/${project_name}/CoverageReport${test_type}.html"
+                                     
+                                             # Only run mutation testing if not a cron job
+                                             if [ -z "${'$'}IS_CRON_JOB" ]; then
                                                  dotnet stryker
-                                                 # Copy the results and navigate back to the original directory
-                                                 cp -r StrykerOutput ../../artifacts/${'$'}project_name/MutationReport${'$'}test_type
-                                                 
+                                                 # Copy the results
+                                                 cp -r StrykerOutput "${'$'}{original_dir}/artifacts/${'$'}{project_name}/MutationReport${'$'}{test_type}"
                                              fi
-                                         cp -r TestResults ../../artifacts/${'$'}project_name/TestResults${'$'}test_type
-                                         popd
+                                     
+                                             # Return to the original directory
+                                             cd "${'$'}original_dir" || return 1
+                                         else
+                                             echo "Test project directory '${'$'}{test_project_path}' does not exist."
+                                             return 1
+                                         fi
                                      }
                                      # SourceVis
                                      build_and_test "SourceVis" "Unit"
@@ -73,10 +89,10 @@
                                      # Generate living documentation for SpecFlow projects
                                      generate_living_doc() {
                                          local project_name="${'$'}1"
-                                         pushd test/${'$'}project_name/${'$'}project_name.spec/bin/Debug/net7.0
+                                         cd test/${'$'}project_name/${'$'}project_name.spec/bin/Debug/net7.0
                                          livingdoc test-assembly ${'$'}project_name.Spec.dll -t TestExecution.json
-                                         cp LivingDoc.html ../../../../../artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
-                                         popd
+                                         cp LivingDoc.html artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
+                                         cd -
                                      }
                                      
                                      generate_living_doc "SourceVis"
