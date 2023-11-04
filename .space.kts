@@ -28,11 +28,20 @@
                                      # Setup environment paths
                                      export PATH="${'$'}PATH:/root/.dotnet/tools:${'$'}JAVA_HOME/bin"
                              
-                                     # Install necessary tools via dotnet
-                                     dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
-                                     dotnet tool install -g dotnet-stryker
-                                     dotnet tool install --global dotnet-sonarscanner
-                                     dotnet tool install --global JetBrains.dotCover.GlobalTool
+                             
+                                    # Install necessary tools if not already present
+                                    tool_check_and_install() {
+                                      local tool_name="$1"
+                                      if ! dotnet tool list -g | grep -q "$tool_name"; then
+                                        dotnet tool install -g "$tool_name"
+                                      fi
+                                    }
+                                    
+                                    # Tools to install
+                                    tool_check_and_install SpecFlow.Plus.LivingDoc.CLI
+                                    tool_check_and_install dotnet-stryker
+                                    tool_check_and_install dotnet-sonarscanner
+                                    tool_check_and_install JetBrains.dotCover.GlobalTool
                                      
                                      # Create artifacts directories
                                      mkdir -p artifacts/{Shadow,SourceVis}
@@ -43,14 +52,12 @@
                                              /d:sonar.host.url=https://sonarcloud.io \
                                              /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
                                      
+                                     dotnet build ShadowEngine.sln --no-incremental -c Release
                                      # Function for building, testing and collecting coverage and reports
                                      build_and_test() {
                                          local project_name="${'$'}1"
                                          local test_type="${'$'}2"  # Unit or Spec
                                          local original_dir=${'$'}(pwd) # Save the original directory path
-                                     
-                                         # Build the project in Release configuration
-                                         dotnet build "src/${'$'}{project_name}/${'$'}{project_name}.Core" --no-incremental -c Release 
                                      
                                          # Define the test project path
                                          local test_project_path="test/${'$'}{project_name}/${'$'}{project_name}.${'$'}{test_type}"
@@ -109,7 +116,7 @@
                                      package_executable "SourceVis" "Core"
                              
                                      # Finish up
-                                     dotnet sonarscanner end
+                                     dotnet sonarscanner end  /d:sonar.cs.dotcover.reportsPaths="${original_dir}/artifacts/${project_name}/CoverageReport${test_type}.html"
                                      """.trimIndent()
 
 job("run tests on commit") {
