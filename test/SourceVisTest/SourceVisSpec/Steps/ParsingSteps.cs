@@ -7,25 +7,28 @@ namespace SourceVisSpec.Steps;
 [Binding]
 public class ParsingSteps : LogHelper
 {
-    private Project _parsed = new();
+    private readonly ScenarioContext _scenarioContext;
+
+    public ParsingSteps(ScenarioContext scenarioContext) => _scenarioContext = scenarioContext;
 
     [Given(@"we parse '(.*)'")]
     public async Task GivenWeParseTheFollowingCode(string filename)
     {
         var finalPath = Directory.GetCurrentDirectory() + "../../../../TestFiles/" + filename;
-        _parsed = Parser.ParseFromSource(await File.ReadAllTextAsync(finalPath));
+        
+        _scenarioContext.Set(Parser.ParseFromSource(await File.ReadAllTextAsync(finalPath)));
     }
 
     [Then(@"there (?:is|are) (\d*) class(?:es|)")]
     public void ThenThereIsClass(int classCount)
     {
-        LogAssert(() => Assert.That(_parsed.Classes.Count, Is.EqualTo(classCount)));
+        LogAssert(() => Assert.That(_scenarioContext.Get<Project>().Classes.Count, Is.EqualTo(classCount)));
     }
 
     [Then(@"there is a class named '(.*)'")]
     public void ThenThereIsAClassNamed(string className)
     {
-        LogAssert(() => Assert.That(_parsed.Classes.Select(pair => pair.Key.Split('.')[^1]),
+        LogAssert(() => Assert.That(_scenarioContext.Get<Project>().Classes.Select(pair => pair.Key.Split('.')[^1]),
             Contains.Item(className.Split('.')[^1])));
     }
 
@@ -34,7 +37,7 @@ public class ParsingSteps : LogHelper
         int dependencyCount)
     {
         LogAssert(() => Assert.That(
-            _parsed.Classes.First(ContainsKey<Class>(className)).Value
+            _scenarioContext.Get<Project>().Classes.First(ContainsKey<Class>(className)).Value
                 .Dependencies.First(ContainsKey<Dependency>(dependencyName)).Value[type],
             Is.EqualTo(dependencyCount)));
     }
@@ -43,7 +46,7 @@ public class ParsingSteps : LogHelper
     public void ThenTheClassDependsOnTimes(string className, string dependencyName, int dependencyCount)
     {
         LogAssert(() => Assert.That(
-            _parsed.Classes.First(ContainsKey<Class>(className)).Value
+            _scenarioContext.Get<Project>().Classes.First(ContainsKey<Class>(className)).Value
                 .Dependencies.First(ContainsKey<Dependency>(dependencyName)).Value.Total,
             Is.EqualTo(dependencyCount)));
     }
@@ -53,7 +56,7 @@ public class ParsingSteps : LogHelper
     public void ThenTheClassHasDependencies(string className, int dependencyCount)
     {
         LogAssert(() => Assert.That(
-            _parsed.Classes.First(ContainsKey<Class>(className)).Value
+            _scenarioContext.Get<Project>().Classes.First(ContainsKey<Class>(className)).Value
                 .Dependencies.Count(),
             Is.EqualTo(dependencyCount)));
     }

@@ -149,108 +149,77 @@ job("Weekly stress test") {
               localPath = "RustLib/rusty_brain.dll"
           }
           env["SONAR_TOKEN"] = "{{ project:SONAR_TOKEN }}"
-        shellScript {
-            content = """
-            apt update
-            apt install -y openjdk-17-jdk
-            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-            
-              # Installing livingdoc and specflow tools via dotnet
-              export PATH="${'$'}PATH:/root/.dotnet/tools:${'$'}JAVA_HOME/bin"
-              dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
-              dotnet tool install -g dotnet-stryker
-              dotnet tool install --global dotnet-sonarscanner
-              dotnet tool install --global dotnet-test-html
-              dotnet tool install --global JetBrains.dotCover.GlobalTool
-              
-              mkdir artifacts
-              cd artifacts
-              mkdir SourceVis
-              mkdir Shadow
-              mkdir Analysis
-              cd ..
-              
-              dotnet sonarscanner begin \
-                /o:blackwolfgames \
-                /k:BlackwolfGames_Shadow \
-                /d:sonar.host.url=https://sonarcloud.io \
-                /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
-              
-              # Building and running tests from Analyzers1.Tests
-              dotnet build Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj –no-incremental
-              dotnet test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj --logger html
-              dotnet dotcover test Analyzers1/Analyzers1.Tests/Analyzers1.Tests.csproj --dcReportType=HTML
-              
-              cd Analyzers1/Analyzers1.Tests
-              dotnet stryker
-              cp -r StrykerOutput ../../artifacts/Analysis/MutationReport
-              cp -r TestResults ../../artifacts/Analysis/TestResults
-              cd ../../
-              
-              # Building and running tests from SourceVisUnit
-              dotnet build SourceVisUnit/SourceVisUnit.csproj –no-incremental
-              dotnet test SourceVisUnit/SourceVisUnit.csproj --logger html
-              dotnet dotcover test SourceVisUnit/SourceVisUnit.csproj --dcReportType=HTML
-              
-              cd SourceVisUnit
-              dotnet stryker
-              cp -r StrykerOutput ../artifacts/SourceVis/MutationReportUnit
-              cp -r TestResults ../artifacts/SourceVis/TestResultsUnit
-              cd ../
-              
-              # Building and running tests from SourceVisSpec
-              dotnet build SourceVisSpec/SourceVisSpec.csproj –no-incremental
-              dotnet test SourceVisSpec/SourceVisSpec.csproj --logger html
-              dotnet dotcover test SourceVisSpec/SourceVisSpec.csproj --dcReportType=HTML
-              
-              # Generating living documentation
-              cd SourceVisSpec/bin/Debug/net7.0
-              livingdoc test-assembly SourceVisSpec.dll -t TestExecution.json
-              cp LivingDoc.html ../../../../artifacts/SourceVis/LivingDocSource.html
-              cd ../../../
-              
-              dotnet stryker
-              cp -r StrykerOutput ../artifacts/SourceVis/MutationReporttSpec
-              cp -r TestResults ../artifacts/SourceVis/TestResultsSpec
-              cd ../
-              
-              # Building and running tests from ShadowTest
-              dotnet build ShadowTest/ShadowTest.csproj –no-incremental
-              dotnet test ShadowTest/ShadowTest.csproj --logger html
-              dotnet dotcover test ShadowTest/ShadowTest.csproj --dcReportType=HTML
-              
-              cd ShadowTest
-              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
-              cp -r StrykerOutput ../artifacts/Shadow/MutationReportUnitCore
-              dotnet stryker -p /mnt/space/work/Shadow/ShadowEngine/ShadowEngine.csproj
-              cp -r StrykerOutput ../artifacts/Shadow/MutationReportUnitEngine
-              cp -r TestResults ../artifacts/Shadow/TestResultsUnit
-              cd ../
-              
-              # Building and running tests from ShadowSpecs
-              dotnet build ShadowSpecs/ShadowSpecs.csproj –no-incremental
-              dotnet test ShadowSpecs/ShadowSpecs.csproj --logger html
-              dotnet dotcover test ShadowSpecs/ShadowSpecs.csproj --dcReportType=HTML
-              
-              # Generating living documentation
-              cd ShadowSpecs/bin/Debug/net7.0
-              livingdoc test-assembly ShadowSpecs.dll -t TestExecution.json
-              cp LivingDoc.html ../../../../artifacts/Shadow/LivingDocShadow.html
-              cd ../../../
-                            
-              dotnet stryker -p /mnt/space/work/Shadow/ShadowCore/ShadowCore.csproj
-              cp -r StrykerOutput ../artifacts/Shadow/MutationReportSpecCore
-              dotnet stryker -p /mnt/space/work/Shadow/ShadowEngine/ShadowEngine.csproj
-              cp -r StrykerOutput ../artifacts/Shadow/MutationReportSpecEngine
-              cp -r TestResults ../artifacts/Shadow/TestResultsSpec
-              cd ../    
-              
-              dotnet build Analyzers1/Analyzers1/Analyzers1.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Analysis
-              dotnet build ShadowEngine/ShadowEngine.csproj -c Release -r win-x64 --self-contained true -o /artifacts/Shadow
-              dotnet build SourceVisCore/SourceVisCore.csproj -c Release -r win-x64 --self-contained true -o /artifacts/SourceVis
-              dotnet sonarscanner end
-              """
+        
+    shellScript {
+        content = """
+        apt update
+        apt install -y openjdk-17-jdk
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        
+        # Setup environment paths
+        export PATH="$PATH:/root/.dotnet/tools:$JAVA_HOME/bin"
+
+        # Install necessary tools via dotnet
+        dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
+        dotnet tool install -g dotnet-stryker
+        dotnet tool install --global dotnet-sonarscanner
+        dotnet tool install --global dotnet-test-html
+        dotnet tool install --global JetBrains.dotCover.GlobalTool
+        
+        # Create artifacts directories
+        mkdir -p artifacts/{Analysis,Shadow,SourceVis}
+        
+        # Function for building, testing and collecting coverage and reports
+        build_and_test() {
+            local project_name="$1"
+            local test_type="$2"  # Unit or Spec
+            dotnet build src/$project_name -c Release –no-incremental
+            dotnet test src/$project_name.Tests --logger html
+            dotnet dotcover test src/$project_name.Tests --dcReportType=HTML
+            dotnet stryker
+            cp -r StrykerOutput artifacts/$project_name/MutationReport${test_type}
+            cp -r TestResults artifacts/$project_name/TestResults${test_type}
         }
+
+        # Analyzers
+        build_and_test "Analyzers1/Analyzers1" "Unit"
+
+        # SourceVis
+        build_and_test "SourceVis/SourceVisCore" "Unit"
+        build_and_test "SourceVis/SourceVisSpec" "Spec"
+
+        # ShadowEngine
+        build_and_test "ShadowEngine/ShadowCore" "Unit"
+        build_and_test "ShadowEngine/ShadowSpec" "Spec"
+
+        # Generate living documentation for SpecFlow projects
+        generate_living_doc() {
+            local project_path="$1"
+            local output_path="$2"
+            cd $project_path/bin/Debug/net7.0
+            livingdoc test-assembly $project_path.dll -t TestExecution.json
+            cp LivingDoc.html $output_path
+            cd -
+        }
+        
+        generate_living_doc "src/SourceVis/SourceVisSpec" "artifacts/SourceVis/LivingDocSourceVis.html"
+        generate_living_doc "src/ShadowEngine/ShadowSpec" "artifacts/Shadow/LivingDocShadow.html"
+
+        # Packaging executables
+        package_executable() {
+            local project_name="$1"
+            local output_dir="$2"
+            dotnet build src/$project_name -c Release -r win-x64 --self-contained true -o $output_dir
+        }
+        
+        package_executable "Analyzers1/Analyzers1" "artifacts/Analysis"
+        package_executable "ShadowEngine/ShadowEngine" "artifacts/Shadow"
+        package_executable "SourceVis/SourceVisCore" "artifacts/SourceVis"
+
+        # Finish up
+        dotnet sonarscanner end
+        """
+    }
 
           fileArtifacts {
               // To upload to another repo, uncomment the next line

@@ -38,7 +38,6 @@ public enum DependencyType
     Implementation,
     InstanceInvocation,
     StaticInvocation,
-    Literal,
     Nesting,
     EventDeclaration,
     DelegateDeclaration,
@@ -50,5 +49,4 @@ public enum DependencyType
     GenericMethod,
     GenericClass,
     Attribute,
-    Special,
 }

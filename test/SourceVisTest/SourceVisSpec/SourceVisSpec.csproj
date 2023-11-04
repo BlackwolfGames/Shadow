@@ -1,0 +1,100 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="TechTalk.SpecFlow"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="JunitXml.TestLogger" Version="3.0.134" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0"/>
+        <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57"/>
+        <PackageReference Include="SpecFlow.NUnit" Version="3.9.22"/>
+        <PackageReference Include="nunit" Version="3.13.2"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="4.1.0"/>
+        <PackageReference Include="FluentAssertions" Version="6.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\src\SourceVis\SourceVisCore\SourceVisCore.csproj" />
+      <ProjectReference Include="..\SourceVisCore\SourceVisCore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Features\Parsing\Casting.feature.cs">
+        <DependentUpon>Casting.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\ClassTypes.feature.cs">
+        <DependentUpon>ClassTypes.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\Delegates.feature.cs">
+        <DependentUpon>Delegates.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\DependencyInjection.feature.cs">
+        <DependentUpon>DependencyInjection.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\DirectInstantiation.feature.cs">
+        <DependentUpon>DirectInstantiation.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\Exceptions.feature.cs">
+        <DependentUpon>Exceptions.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\Generics.feature.cs">
+        <DependentUpon>Generics.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\Inheritance.feature.cs">
+        <DependentUpon>Inheritance.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\Oddities.feature.cs">
+        <DependentUpon>Oddities.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Parsing\SimpleCalls.feature.cs">
+        <DependentUpon>SimpleCalls.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Drivers\" />
+      <Folder Include="Features\Layout\" />
+    </ItemGroup>
+
+</Project>
