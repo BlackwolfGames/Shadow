@@ -50,14 +50,14 @@
                                          dotnet build src/${'$'}project_name/${'$'}project_name.Core --no-incremental -c Release 
                                          dotnet test test/${'$'}project_name/${'$'}project_name.${'$'}test_type --logger html
                                          dotnet dotcover test test/${'$'}project_name/${'$'}project_name.Tests --dcReportType=HTML
-                                         if [ -z "$IS_CRON_JOB" ]; then
-                                             # Navigate to the test project directory before running Stryker
-                                             pushd test/$project_name/$project_name.$test_type
-                                             dotnet stryker
-                                             # Copy the results and navigate back to the original directory
-                                             cp -r StrykerOutput ../../artifacts/$project_name/MutationReport$test_type
-                                             popd
-                                         fi
+                                         if [ -z "${'$'}IS_CRON_JOB" ]; then
+                                                 # Navigate to the test project directory before running Stryker
+                                                 pushd test/${'$'}project_name/${'$'}project_name.${'$'}test_type
+                                                 dotnet stryker
+                                                 # Copy the results and navigate back to the original directory
+                                                 cp -r StrykerOutput ../../artifacts/${'$'}project_name/MutationReport${'$'}test_type
+                                                 popd
+                                             fi
                                          cp -r TestResults artifacts/${'$'}project_name/TestResults${'$'}test_type
                                      }
                                      # SourceVis
