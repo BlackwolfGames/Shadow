@@ -46,11 +46,11 @@
                                      # Create artifacts directories
                                      mkdir -p artifacts/{Shadow,SourceVis}
                                     
-                                           dotnet sonarscanner begin \
-                                             /o:blackwolfgames \
-                                             /k:BlackwolfGames_Shadow \
-                                             /d:sonar.host.url=https://sonarcloud.io \
-                                             /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+                                       dotnet sonarscanner begin \
+                                         /o:blackwolfgames \
+                                         /k:BlackwolfGames_Shadow \
+                                         /d:sonar.host.url=https://sonarcloud.io \
+                                         /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
                                      
                                      dotnet build ShadowEngine.sln --no-incremental -c Debug
                                      # Function for building, testing and collecting coverage and reports
@@ -165,6 +165,7 @@ job("run tests on commit") {
               localPath = "RustLib/rusty_brain.dll"
           }
         env["IS_CRON_JOB"] = "false"
+          env["SONAR_TOKEN"] = "{{ project:SONAR_TOKEN }}"
 
         shellScript {
             content = callSharedScript()
