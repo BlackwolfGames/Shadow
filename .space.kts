@@ -4,6 +4,93 @@
 * For more info, see https://www.jetbrains.com/help/space/automation.html
 */
 
+
+    fun RustBuild() = """
+                                    apt-get update
+                                    apt-get install -y clang lld mingw-w64
+                                    rustup target add x86_64-pc-windows-gnu
+                                        
+                                    cd shadow_rust
+                                    mkdir artifacts
+                                    cd rusty_brain
+                                    
+                                    cargo build --release --package rusty_brain --target=x86_64-pc-windows-gnu
+                                    cargo test --package rusty_brain --lib tests --no-fail-fast
+                                    
+                                    cp target/x86_64-pc-windows-gnu/release/rusty_brain.dll ../artifacts/rusty_brain.dll
+                                    """.trimIndent()
+    
+    fun callSharedScript() = """
+                                     apt update
+                                     apt install -y openjdk-17-jdk
+                                     export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+                                     
+                                     # Setup environment paths
+                                     export PATH="${'$'}PATH:/root/.dotnet/tools:${'$'}JAVA_HOME/bin"
+                             
+                                     # Install necessary tools via dotnet
+                                     dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
+                                     dotnet tool install -g dotnet-stryker
+                                     dotnet tool install --global dotnet-sonarscanner
+                                     dotnet tool install --global dotnet-test-html
+                                     dotnet tool install --global JetBrains.dotCover.GlobalTool
+                                     
+                                     # Create artifacts directories
+                                     mkdir -p artifacts/{Shadow,SourceVis}
+                                    
+                                           dotnet sonarscanner begin \
+                                             /o:blackwolfgames \
+                                             /k:BlackwolfGames_Shadow \
+                                             /d:sonar.host.url=https://sonarcloud.io \
+                                             /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+                                     
+                                     # Function for building, testing and collecting coverage and reports
+                                     build_and_test() {
+                                         local project_name="${'$'}1"
+                                         local test_type="${'$'}2"  # Unit or Spec
+                                         dotnet build src/${'$'}project_name/${'$'}project_name.Core -c Release –no-incremental
+                                         dotnet test test/${'$'}project_name/${'$'}project_name.${'$'}test_type --logger html
+                                         dotnet dotcover test src/${'$'}project_name.Tests --dcReportType=HTML
+                                          if [ -z "${'$'}IS_CRON_JOB" ]; then
+                                                     dotnet stryker
+                                                     cp -r StrykerOutput artifacts/${'$'}project_name/MutationReport${'$'}test_type
+                                                 fi
+                                         cp -r TestResults artifacts/${'$'}project_name/TestResults${'$'}test_type
+                                     }
+                                     # SourceVis
+                                     build_and_test "SourceVis" "Unit"
+                                     build_and_test "SourceVis" "Spec"
+                             
+                                     # ShadowEngine
+                                     build_and_test "ShadowEngine/Shadow" "Unit"
+                                     build_and_test "ShadowEngine/Shadow" "Spec"
+                             
+                                     # Generate living documentation for SpecFlow projects
+                                     generate_living_doc() {
+                                         local project_name="${'$'}1"
+                                         cd test/${'$'}project_name/${'$'}project_name.spec/bin/Debug/net7.0
+                                         livingdoc test-assembly ${'$'}project_name.Spec.dll -t TestExecution.json
+                                         cp LivingDoc.html artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
+                                         cd -
+                                     }
+                                     
+                                     generate_living_doc "SourceVis"
+                                     generate_living_doc "ShadowEngine"
+                             
+                                     # Packaging executables
+                                     package_executable() {
+                                         local project_name="${'$'}1"
+                                         local project_type="${'$'}2"
+                                         dotnet build src/${'$'}project_name.${'$'}project_type -c Release -r win-x64 --self-contained true -o artifacts/${'$'}project_name
+                                     }
+                                     
+                                     package_executable "ShadowEngine" "Gui"
+                                     package_executable "SourceVis" "Core"
+                             
+                                     # Finish up
+                                     dotnet sonarscanner end
+                                     """.trimIndent()
+
 job("run tests on commit") {
     startOn {
         gitPush { enabled = true }
@@ -153,89 +240,4 @@ job("Weekly stress test") {
           }
     }
     
-    fun RustBuild() = """
-                                    apt-get update
-                                    apt-get install -y clang lld mingw-w64
-                                    rustup target add x86_64-pc-windows-gnu
-                                        
-                                    cd shadow_rust
-                                    mkdir artifacts
-                                    cd rusty_brain
-                                    
-                                    cargo build --release --package rusty_brain --target=x86_64-pc-windows-gnu
-                                    cargo test --package rusty_brain --lib tests --no-fail-fast
-                                    
-                                    cp target/x86_64-pc-windows-gnu/release/rusty_brain.dll ../artifacts/rusty_brain.dll
-                                    """
-    
-    fun callSharedScript() = """
-                                     apt update
-                                     apt install -y openjdk-17-jdk
-                                     export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-                                     
-                                     # Setup environment paths
-                                     export PATH="${'$'}PATH:/root/.dotnet/tools:${'$'}JAVA_HOME/bin"
-                             
-                                     # Install necessary tools via dotnet
-                                     dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
-                                     dotnet tool install -g dotnet-stryker
-                                     dotnet tool install --global dotnet-sonarscanner
-                                     dotnet tool install --global dotnet-test-html
-                                     dotnet tool install --global JetBrains.dotCover.GlobalTool
-                                     
-                                     # Create artifacts directories
-                                     mkdir -p artifacts/{Shadow,SourceVis}
-                                    
-                                           dotnet sonarscanner begin \
-                                             /o:blackwolfgames \
-                                             /k:BlackwolfGames_Shadow \
-                                             /d:sonar.host.url=https://sonarcloud.io \
-                                             /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
-                                     
-                                     # Function for building, testing and collecting coverage and reports
-                                     build_and_test() {
-                                         local project_name="${'$'}1"
-                                         local test_type="${'$'}2"  # Unit or Spec
-                                         dotnet build src/${'$'}project_name/${'$'}project_name.Core -c Release –no-incremental
-                                         dotnet test test/${'$'}project_name/${'$'}project_name.${'$'}test_type --logger html
-                                         dotnet dotcover test src/${'$'}project_name.Tests --dcReportType=HTML
-                                          if [ -z "${'$'}IS_CRON_JOB" ]; then
-                                                     dotnet stryker
-                                                     cp -r StrykerOutput artifacts/${'$'}project_name/MutationReport${'$'}test_type
-                                                 fi
-                                         cp -r TestResults artifacts/${'$'}project_name/TestResults${'$'}test_type
-                                     }
-                                     # SourceVis
-                                     build_and_test "SourceVis" "Unit"
-                                     build_and_test "SourceVis" "Spec"
-                             
-                                     # ShadowEngine
-                                     build_and_test "ShadowEngine/Shadow" "Unit"
-                                     build_and_test "ShadowEngine/Shadow" "Spec"
-                             
-                                     # Generate living documentation for SpecFlow projects
-                                     generate_living_doc() {
-                                         local project_name="${'$'}1"
-                                         cd test/${'$'}project_name/${'$'}project_name.spec/bin/Debug/net7.0
-                                         livingdoc test-assembly ${'$'}project_name.Spec.dll -t TestExecution.json
-                                         cp LivingDoc.html artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
-                                         cd -
-                                     }
-                                     
-                                     generate_living_doc "SourceVis"
-                                     generate_living_doc "ShadowEngine"
-                             
-                                     # Packaging executables
-                                     package_executable() {
-                                         local project_name="${'$'}1"
-                                         local project_type="${'$'}2"
-                                         dotnet build src/${'$'}project_name.${'$'}project_type -c Release -r win-x64 --self-contained true -o artifacts/${'$'}project_name
-                                     }
-                                     
-                                     package_executable "ShadowEngine" "Gui"
-                                     package_executable "SourceVis" "Core"
-                             
-                                     # Finish up
-                                     dotnet sonarscanner end
-                                     """
 }
