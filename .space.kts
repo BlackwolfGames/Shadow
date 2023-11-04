@@ -96,7 +96,7 @@
                                      # Generate living documentation for SpecFlow projects
                                      generate_living_doc() {
                                          local project_name="${'$'}1"
-                                         cd test/${'$'}project_name/${'$'}project_name.spec/bin/Debug/net7.0
+                                         cd test/${'$'}project_name/${'$'}project_name.Spec/bin/Debug/net7.0
                                          livingdoc test-assembly ${'$'}project_name.Spec.dll -t TestExecution.json
                                          cp LivingDoc.html artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
                                          cd -
@@ -170,6 +170,21 @@ job("run tests on commit") {
         shellScript {
             content = callSharedScript()
         }
+        
+          fileArtifacts {
+              // To upload to another repo, uncomment the next line
+              // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
+
+              // Local path to artifact relative to working dir
+              localPath = "artifacts/*"
+              // Don't fail job if build.zip is not found
+              optional = false
+              archive = true
+              // Target path to artifact in file repository.
+              remotePath = "artifacts.zip"
+              // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
+              onStatus = OnStatus.SUCCESS
+          }
     }
 }
 job("Weekly stress test") {
@@ -230,40 +245,12 @@ job("Weekly stress test") {
               // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
               // Local path to artifact relative to working dir
-              localPath = "artifacts/Analysis/*"
+              localPath = "artifacts/*"
               // Don't fail job if build.zip is not found
               optional = false
               archive = true
               // Target path to artifact in file repository.
-              remotePath = "Analysis.zip"
-              // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
-              onStatus = OnStatus.SUCCESS
-          }
-      fileArtifacts {
-          // To upload to another repo, uncomment the next line
-          // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
-
-          // Local path to artifact relative to working dir
-          localPath = "artifacts/SourceVis/*"
-          // Don't fail job if build.zip is not found
-          optional = false
-              archive = true
-          // Target path to artifact in file repository.
-          remotePath = "SourceVis.zip"
-          // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
-          onStatus = OnStatus.SUCCESS
-      }
-          fileArtifacts {
-              // To upload to another repo, uncomment the next line
-              // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
-
-              // Local path to artifact relative to working dir
-              localPath = "artifacts/Shadow/*"
-              // Don't fail job if build.zip is not found
-              optional = false
-              archive = true
-              // Target path to artifact in file repository.
-              remotePath = "Shadow.zip"
+              remotePath = "artifacts.zip"
               // Upload condition (job run result): SUCCESS (default), ERROR, ALWAYS
               onStatus = OnStatus.SUCCESS
           }
