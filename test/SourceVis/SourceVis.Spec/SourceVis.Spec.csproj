@@ -25,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\SourceVis\SourceVis.Core\SourceVisCore.csproj" />
+      <ProjectReference Include="..\..\..\src\SourceVis\SourceVis.Core\SourceVis.Core.csproj" />
       <ProjectReference Include="..\..\..\src\SourceVis\SourceVisCore\SourceVisCore.csproj" />
       <ProjectReference Include="..\SourceVisCore\SourceVisCore.csproj" />
     </ItemGroup>

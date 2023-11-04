@@ -32,7 +32,6 @@
                                      dotnet tool install -g SpecFlow.Plus.LivingDoc.CLI
                                      dotnet tool install -g dotnet-stryker
                                      dotnet tool install --global dotnet-sonarscanner
-                                     dotnet tool install --global dotnet-test-html
                                      dotnet tool install --global JetBrains.dotCover.GlobalTool
                                      
                                      # Create artifacts directories
@@ -62,8 +61,8 @@
                                      build_and_test "SourceVis" "Spec"
                              
                                      # ShadowEngine
-                                     build_and_test "ShadowEngine/Shadow" "Unit"
-                                     build_and_test "ShadowEngine/Shadow" "Spec"
+                                     build_and_test "ShadowEngine" "Unit"
+                                     build_and_test "ShadowEngine" "Spec"
                              
                                      # Generate living documentation for SpecFlow projects
                                      generate_living_doc() {

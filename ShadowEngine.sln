@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceVis.Unit", "test\Sour
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadowEngine.Gui", "src\ShadowEngine\ShadowEngine.Gui\ShadowEngine.Gui.csproj", "{B300B236-92C2-4AC6-8F67-E76399FF0A1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceVisCore", "src\SourceVis\SourceVis.Core\SourceVisCore.csproj", "{B85DFD9F-50BE-4375-9DCB-222F1EC0293F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceVis.Core", "src\SourceVis\SourceVis.Core\SourceVis.Core.csproj", "{B85DFD9F-50BE-4375-9DCB-222F1EC0293F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadowEngine.Spec", "test\ShadowEngine\ShadowEngine.Spec\ShadowEngine.Spec.csproj", "{1C21D60E-9E34-4241-8396-85995DC0869F}"
 EndProject
