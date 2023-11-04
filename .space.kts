@@ -49,11 +49,15 @@
                                          local test_type="${'$'}2"  # Unit or Spec
                                          dotnet build src/${'$'}project_name/${'$'}project_name.Core --no-incremental -c Release 
                                          dotnet test test/${'$'}project_name/${'$'}project_name.${'$'}test_type --logger html
-                                         dotnet dotcover test test/${'$'}project_name.Tests --dcReportType=HTML
-                                          if [ -z "${'$'}IS_CRON_JOB" ]; then
-                                                     dotnet stryker
-                                                     cp -r StrykerOutput artifacts/${'$'}project_name/MutationReport${'$'}test_type
-                                                 fi
+                                         dotnet dotcover test test/${'$'}project_name/${'$'}project_name.Tests --dcReportType=HTML
+                                         if [ -z "$IS_CRON_JOB" ]; then
+                                             # Navigate to the test project directory before running Stryker
+                                             pushd test/$project_name/$project_name.$test_type
+                                             dotnet stryker
+                                             # Copy the results and navigate back to the original directory
+                                             cp -r StrykerOutput ../../artifacts/$project_name/MutationReport$test_type
+                                             popd
+                                         fi
                                          cp -r TestResults artifacts/${'$'}project_name/TestResults${'$'}test_type
                                      }
                                      # SourceVis
@@ -80,7 +84,7 @@
                                      package_executable() {
                                          local project_name="${'$'}1"
                                          local project_type="${'$'}2"
-                                         dotnet build src/${'$'}project_name.${'$'}project_type -c Release -r win-x64 --self-contained true -o artifacts/${'$'}project_name
+                                         dotnet build src/${'$'}project_name/${'$'}project_name.${'$'}project_type -c Release -r win-x64 --self-contained true -o artifacts/${'$'}project_name
                                      }
                                      
                                      package_executable "ShadowEngine" "Gui"
