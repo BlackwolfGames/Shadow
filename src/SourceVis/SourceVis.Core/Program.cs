@@ -2,6 +2,6 @@
 
 using SourceVisCore.AST;
 
-var sln = await Parser.Parse("../../../../ShadowEngine.sln");
+var sln = await Parser.Parse("../../../../ShadowEngine.Gui.sln");
 
 sln.Print();

@@ -5,6 +5,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>ShadowEngine</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ShadowCore\ShadowCore.csproj" />
+      <ProjectReference Include="..\ShadowEngine.Core\ShadowEngine.Core.csproj" />
     </ItemGroup>
 
 </Project>

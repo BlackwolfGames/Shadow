@@ -22,7 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\ShadowEngine\ShadowEngineGUI\ShadowEngine.csproj" />
+      <ProjectReference Include="..\..\..\src\ShadowEngine\ShadowEngine.Gui\ShadowEngine.Gui.csproj" />
+      <ProjectReference Include="..\..\..\src\ShadowEngine\ShadowEngineGUI\ShadowEngine.Gui.csproj" />
       <ProjectReference Include="..\ShadowCore\ShadowCore.csproj" />
       <ProjectReference Include="..\ShadowEngine\ShadowEngine.csproj" />
     </ItemGroup>
