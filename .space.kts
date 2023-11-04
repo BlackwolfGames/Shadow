@@ -61,7 +61,7 @@
                                              cd "${'$'}test_project_path" || return 1
                                      
                                              # Run tests and collect coverage
-                                             dotnet test --no-build --logger "html;LogFileName=TestResults.html" -c Release --results-directory "${'$'}{original_dir}/artifacts/${'$'}{project_name}/TestResults${test_type}"
+                                             dotnet test --no-build --logger "html;LogFileName=TestResults.html" -c Release --results-directory "${'$'}{original_dir}/artifacts/${'$'}{project_name}/TestResults${'$'}{test_type}"
                                              dotnet dotcover test --no-build --dcReportType="HTML" --dcOutput="${'$'}{original_dir}/artifacts/${'$'}{project_name}/CoverageReport${'$'}{test_type}.html"
                                      
                                              # Only run mutation testing if not a cron job
