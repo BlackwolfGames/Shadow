@@ -171,14 +171,14 @@ job("Weekly stress test") {
         
         # Function for building, testing and collecting coverage and reports
         build_and_test() {
-            local project_name="$1"
-            local test_type="$2"  # Unit or Spec
-            dotnet build src/\$project_name -c Release –no-incremental
-            dotnet test src/\$project_name.Tests --logger html
-            dotnet dotcover test src/\$project_name.Tests --dcReportType=HTML
+            local project_name="${'$'}1"
+            local test_type="${'$'}2"  # Unit or Spec
+            dotnet build src/${'$'}project_name -c Release –no-incremental
+            dotnet test src/${'$'}project_name.Tests --logger html
+            dotnet dotcover test src/${'$'}project_name.Tests --dcReportType=HTML
             dotnet stryker
-            cp -r StrykerOutput artifacts/\$project_name/MutationReport\$test_type
-            cp -r TestResults artifacts/\$project_name/TestResults\$test_type
+            cp -r StrykerOutput artifacts/${'$'}project_name/MutationReport${'$'}test_type
+            cp -r TestResults artifacts/${'$'}project_name/TestResults${'$'}test_type
         }
 
         # Analyzers
@@ -194,11 +194,11 @@ job("Weekly stress test") {
 
         # Generate living documentation for SpecFlow projects
         generate_living_doc() {
-            local project_path="$1"
-            local output_path="$2"
-            cd \$project_path/bin/Debug/net7.0
-            livingdoc test-assembly \$project_path.dll -t TestExecution.json
-            cp LivingDoc.html \$output_path
+            local project_path="${'$'}1"
+            local output_path="${'$'}2"
+            cd ${'$'}project_path/bin/Debug/net7.0
+            livingdoc test-assembly ${'$'}project_path.dll -t TestExecution.json
+            cp LivingDoc.html ${'$'}output_path
             cd -
         }
         
@@ -207,9 +207,9 @@ job("Weekly stress test") {
 
         # Packaging executables
         package_executable() {
-            local project_name="$1"
-            local output_dir="$2"
-            dotnet build src/\$project_name -c Release -r win-x64 --self-contained true -o \$output_dir
+            local project_name="${'$'}1"
+            local output_dir="${'$'}2"
+            dotnet build src/${'$'}project_name -c Release -r win-x64 --self-contained true -o ${'$'}output_dir
         }
         
         package_executable "Analyzers1/Analyzers1" "artifacts/Analysis"
