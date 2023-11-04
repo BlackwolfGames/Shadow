@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SourceVisCore\SourceVisCore.csproj" />
+      <ProjectReference Include="..\..\..\src\SourceVis\SourceVis.Core\SourceVis.Core.csproj" />
     </ItemGroup>
 
 </Project>

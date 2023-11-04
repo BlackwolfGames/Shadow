@@ -47,7 +47,7 @@
                                      build_and_test() {
                                          local project_name="${'$'}1"
                                          local test_type="${'$'}2"  # Unit or Spec
-                                         dotnet build src/${'$'}project_name/${'$'}project_name.Core -c Release -–no-incremental
+                                         dotnet build src/${'$'}project_name/${'$'}project_name.Core --no-incremental -c Release 
                                          dotnet test test/${'$'}project_name/${'$'}project_name.${'$'}test_type --logger html
                                          dotnet dotcover test test/${'$'}project_name.Tests --dcReportType=HTML
                                           if [ -z "${'$'}IS_CRON_JOB" ]; then
