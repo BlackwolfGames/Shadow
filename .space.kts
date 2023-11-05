@@ -69,7 +69,7 @@
                                              cd "${'$'}test_project_path" || return 1
                                      
                                              # Run tests and collect coverage
-                                             dotnet test --no-build --logger "html;LogFileName=TestResults.html" -c Debug --results-directory "${'$'}{original_dir}/artifacts/${'$'}{project_name}/TestResults${'$'}{test_type}"
+                                             dotnet test --no-build --logger "html;LogFileName=TestResults.html" -c Debug --results-directory "${'$'}{original_dir}/artifacts/${'$'}{project_name}/TestResults${'$'}{test_type}.html"
                                              dotnet dotcover test --no-build --dcReportType="HTML" --dcOutput="${'$'}{original_dir}/artifacts/${'$'}{project_name}/CoverageReport${'$'}{test_type}.html"
                                      
                                              # Only run mutation testing if not a cron job
@@ -96,11 +96,12 @@
                              
                                      # Generate living documentation for SpecFlow projects
                                      generate_living_doc() {
+                                        local original_dir=${'$'}(pwd) # Save the original directory path
                                          local project_name="${'$'}1"
                                          cd test/${'$'}project_name/${'$'}project_name.Spec/bin/Debug/net7.0
                                          livingdoc test-assembly ${'$'}project_name.Spec.dll -t TestExecution.json
                                          cp LivingDoc.html artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
-                                         cd -
+                                         cd ${'$'}original_dir
                                      }
                                      
                                      generate_living_doc "SourceVis"
@@ -246,7 +247,7 @@ job("Weekly stress test") {
               // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
               // Local path to artifact relative to working dir
-              localPath = "artifacts/*"
+              localPath = "artifacts/**/*"
               // Don't fail job if build.zip is not found
               optional = false
               archive = true
