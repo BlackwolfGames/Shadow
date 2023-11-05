@@ -51,7 +51,7 @@
                                          /o:blackwolfgames \
                                          /k:BlackwolfGames_Shadow \
                                          /d:sonar.host.url=https://sonarcloud.io \
-                                         /d:sonar.cs.dotcover.reportsPaths=artifacts/**/dotCover.*.html
+                                         /d:sonar.cs.dotcover.reportsPaths=artifacts/**/CoverageReport*.html
                                      
                                      dotnet build ShadowEngine.sln --no-incremental -c Debug
                                      # Function for building, testing and collecting coverage and reports
