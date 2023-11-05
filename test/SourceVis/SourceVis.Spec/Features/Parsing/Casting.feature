@@ -2,7 +2,7 @@
 	Simple calculator for adding two numbers
 
 	Scenario: Parser tracks type casting
-		Given we parse 'Casting/TestTypecasting.cs'
+		Given we parse 'Parsing/Casting/TestTypecasting.cs'
 		Then there are 4 classes
 		Then there is a class named 'TypeA'
 		And The class 'TypeA' has 2 dependencies

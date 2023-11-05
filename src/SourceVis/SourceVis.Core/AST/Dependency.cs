@@ -46,6 +46,7 @@ public enum DependencyType
     UnsubscribesFromDelegate,
     SubscribesToEvent,
     UnsubscribesFromEvent,
+    Property,
     GenericMethod,
     GenericClass,
     Attribute,

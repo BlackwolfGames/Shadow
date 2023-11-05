@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - Generics
 
     Scenario Outline: Parser can detect various ways to interact with generics
-        Given we parse 'Generics/TestGenerics.cs'
+        Given we parse 'Parsing/Generics/TestGenerics.cs'
 
         Then there are 4 classes
         And there is a class named '<ClassName>'

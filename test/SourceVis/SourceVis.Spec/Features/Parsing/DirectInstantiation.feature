@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - Direct instantiation
 
 	Scenario: Parser can understand instantiation, and ignores transient dependencies
-		Given we parse 'Instantiation/TestDirectInstantiation.cs'
+		Given we parse 'Parsing/Instantiation/TestDirectInstantiation.cs'
 		Then there are 2 classes
 		Then there is a class named 'InstantiatesSelf'
 		Then there is a class named 'InstantiatesOther'

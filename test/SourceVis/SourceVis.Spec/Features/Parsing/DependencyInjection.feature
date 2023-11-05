@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - DependencyInjection
 
     Scenario Outline: Parser tracks parameters, variable declarations and return values
-        Given we parse 'Injection/TestDependencyInjection.cs'
+        Given we parse 'Parsing/Injection/TestDependencyInjection.cs'
         Then there are 7 classes
        
         And there is a class named '<ClassName>'

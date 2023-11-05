@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - Delegates
 
     Scenario Outline: Parser can detect various ways to interact with delegates/events
-        Given we parse 'Delegates/TestDelegates.cs'
+        Given we parse 'Parsing/Delegates/TestDelegates.cs'
 
         Then there are 3 classes
         And there is a class named '<ClassName>'

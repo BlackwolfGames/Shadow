@@ -111,7 +111,7 @@
                                      package_executable() {
                                          local project_name="${'$'}1"
                                          local project_type="${'$'}2"
-                                         dotnet build src/${'$'}project_name/${'$'}project_name.${'$'}project_type -c Release -r win-x64 --self-contained true -o artifacts/${'$'}project_name
+                                         dotnet build src/${'$'}project_name/${'$'}project_name.${'$'}project_type -c Release -r win-x64 --self-contained true -o artifacts/${'$'}project_name/Build
                                      }
                                      
                                      package_executable "ShadowEngine" "Gui"

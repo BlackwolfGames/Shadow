@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - Inheritance
 			
 	Scenario: Parser can read inheritance, and ignores transient dependencies
-		Given we parse 'Inheritance/TestInheritance.cs'
+		Given we parse 'Parsing/Inheritance/TestInheritance.cs'
 		Then there are 4 classes
 		Then there is a class named 'TestInheritance'
 		Then there is a class named 'ITestInterface'

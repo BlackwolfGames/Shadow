@@ -24,8 +24,10 @@ public class DependencyAnalysisVisitor : CSharpSyntaxWalker
             var validStrategies = _strategies
                 .Where(strategy => strategy.ShouldAnalyze(node));
             var analysisStrategies = validStrategies as IAnalysisStrategy[] ?? validStrategies.ToArray();
+            
             if (!analysisStrategies.Any())
                 Console.WriteLine($"No handler for {node.GetType().Name}, please add one or explicitly ignore it");
+            
             _results.UpdateWith(analysisStrategies
                 .SelectMany(strategy => strategy.Analyze(node, _model)));
         }

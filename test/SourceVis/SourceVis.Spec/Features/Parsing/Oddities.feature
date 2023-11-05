@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - Oddities
 
     Scenario Outline: Parser can detect various ways to interact with generics
-        Given we parse 'Oddities/TestNestingAndAnnotations.cs'
+        Given we parse 'Parsing/Oddities/TestNestingAndAnnotations.cs'
 
         Then there are 2 classes
         And there is a class named '<ClassName>'

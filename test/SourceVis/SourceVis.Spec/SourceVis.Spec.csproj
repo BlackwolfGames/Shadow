@@ -94,6 +94,7 @@
     <ItemGroup>
       <Folder Include="Drivers\" />
       <Folder Include="Features\Layout\" />
+      <Folder Include="TestFiles\Parsing\" />
     </ItemGroup>
 
 </Project>

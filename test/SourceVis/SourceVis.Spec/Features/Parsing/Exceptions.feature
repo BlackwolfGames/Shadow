@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - Exceptions
 
     Scenario Outline: Parser can detect various ways to interact with exceptions
-        Given we parse 'Exceptions/TestExceptions.cs'
+        Given we parse 'Parsing/Exceptions/TestExceptions.cs'
 
         Then there are 2 classes
         And there is a class named '<ClassName>'

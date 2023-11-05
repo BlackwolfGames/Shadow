@@ -1,7 +1,7 @@
 ﻿Feature: AST parser - Class Types
 
 	Scenario: Parser can read classes
-		Given we parse 'Classes/TestClassTypes.cs'
+		Given we parse 'Parsing/Classes/TestClassTypes.cs'
 		Then there are 4 class
 		Then there is a class named 'TestClass'
 		Then there is a class named 'TestStruct'
@@ -9,7 +9,7 @@
 		Then there is a class named 'TestRecord'
 		
 	Scenario: Parser can detect multiple classes in one file
-		Given we parse 'Classes/TestCallMultipleClass.cs'
+		Given we parse 'Parsing/Classes/TestCallMultipleClass.cs'
 		Then there are 2 classes
 		Then there is a class named 'TestCallMultipleClass1'
 		Then there is a class named 'TestCallMultipleClass2'

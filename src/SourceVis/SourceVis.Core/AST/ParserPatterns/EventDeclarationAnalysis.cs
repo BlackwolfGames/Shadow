@@ -17,16 +17,3 @@ public class EventDeclarationAnalysis : DependencyStrategy<EventDeclarationSynta
         };
     }
 }
-public class DelegateDeclarationAnalysis : DependencyStrategy<DelegateDeclarationSyntax>
-{
-    protected override IEnumerable<AnalysisResult> Analyze(DelegateDeclarationSyntax delegateDeclaration, SemanticModel model)
-    {
-        var delegateType = model.GetDeclaredSymbol(delegateDeclaration);
-        
-        return new[]
-        {
-            new AnalysisResult(true, DependencyType.DelegateDeclaration,
-                delegateType?.ToDisplayString() ?? "BROKEN <DeclaresEvent>")
-        };
-    }
-}
