@@ -178,7 +178,7 @@ job("run tests on commit") {
               // repository = FileRepository(name = "my-file-repo", remoteBasePath = "{{ run:number }}")
 
               // Local path to artifact relative to working dir
-              localPath = "artifacts/*"
+              localPath = "artifacts/**/*"
               // Don't fail job if build.zip is not found
               optional = false
               archive = true
