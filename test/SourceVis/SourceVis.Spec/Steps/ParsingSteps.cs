@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
+using SourceVis.Spec.Hooks;
 using SourceVisCore.AST;
-using SourceVisSpec.Hooks;
 
-namespace SourceVisSpec.Steps;
+namespace SourceVis.Spec.Steps;
 
 [Binding]
 public class ParsingSteps : LogHelper

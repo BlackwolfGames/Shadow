@@ -2,7 +2,7 @@
 using SourceVisCore.AST;
 using SourceVisCore.Graphing;
 
-namespace SourceVisSpec.Steps;
+namespace SourceVis.Spec.Steps;
 
 [Binding]
 public class GraphingSteps
@@ -22,27 +22,27 @@ public class GraphingSteps
         Assert.That(_scenarioContext.Get<IDependencyGraph>().Nodes, Is.EqualTo(p0));
     }
 
-    [Then(@"there is a node named '([^']*)'")]
-    public void ThenGraphNodeHasName(string nodeName)
+    [Then(@"there is a (node '[^']*')")]
+    public void ThenGraphNodeHasName(INode node)
     {
-        Assert.That(_scenarioContext.Get<IDependencyGraph>()['.'+nodeName], Is.Not.Null);
+        Assert.That(node, Is.Not.Null);
     }
 
-    [Then(@"the node '([^']*)' has (\d*) edges?")]
-    public void ThenGraphNodeHasEdges(string nodeName, int p1)
+    [Then(@"the (node '[^']*') has (\d*) edges?")]
+    public void ThenGraphNodeHasEdges(INode? node, int p1)
     {
-        Assert.That(_scenarioContext.Get<IDependencyGraph>()['.'+nodeName]?.Edges, Is.EqualTo(p1));
+        Assert.That(node?.Edges, Is.EqualTo(p1));
     }
     
-    [Then(@"the node '([^']*)' has an edge to '([^']*)'")]
-    public void ThenGraphNodeHasEdges(string nodeName, string edgeName)
+    [Then(@"the (node '[^']*') has an edge to '([^']*)'")]
+    public void ThenGraphNodeHasEdges(INode? node, string edgeName)
     {
-        Assert.That(_scenarioContext.Get<IDependencyGraph>()['.'+nodeName]?['.'+edgeName], Is.Not.Null);
+        Assert.That(node?['.'+edgeName], Is.Not.Null);
     }
     
-    [Then(@"the edge from '([^']*)' to '([^']*)' has (\d*) dependency of type '([^']*)'")]
-    public void ThenGraphNodeHasEdges(string nodeName, string edgeName, int weight, DependencyType type)
+    [Then(@"the edge from (node '[^']*') to '([^']*)' has (\d*) dependency of type '([^']*)'")]
+    public void ThenGraphNodeHasEdges(INode? node, string edgeName, int weight, DependencyType type)
     {
-        Assert.That(_scenarioContext.Get<IDependencyGraph>()['.'+nodeName]?['.'+edgeName]?[type], Is.EqualTo(weight));
+        Assert.That(node?['.'+edgeName]?[type], Is.EqualTo(weight));
     }
 }
