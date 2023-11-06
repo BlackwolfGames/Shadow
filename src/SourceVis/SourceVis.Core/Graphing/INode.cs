@@ -7,4 +7,6 @@ public interface INode
     int Edges { get; }
     IEnumerable<IEdge> AllEdges { get; }
     bool IsInCycle { get; }
+    string[] Namespaces();
+    NodeType NodeType { get; }
 }

@@ -6,9 +6,11 @@ public class Node : INode
 {
     public Node(KeyValuePair<string, Class> myClass)
     {
-        Name = myClass.Key;
+        Name = myClass.Key.Replace("global::", "");
         _edges = myClass.Value.Dependencies.Select(pair => (IEdge) new PreEdge(Name, pair)).ToList();
     }
+
+    public Node(KeyValuePair<string, Dependency> myClass) => Name = myClass.Key;
 
     public void ResolveEdges(IDependencyGraph parent)
     {
@@ -23,5 +25,22 @@ public class Node : INode
     public int Edges => _edges.Count;
     public IEnumerable<IEdge> AllEdges => _edges;
     public bool IsInCycle { get; set; }
-    private List<IEdge> _edges;
+    public string[] Namespaces() => Name.Split('.').SkipLast(1).ToArray();
+
+    public NodeType NodeType
+    {
+        get
+        {
+            var ns = Namespaces();
+            if (ns.Length == 0)
+                return NodeType.generic;
+            
+            if (ns.Contains("System"))
+                return NodeType.builtin;
+            
+            return NodeType.normal;
+        }
+    }
+
+    private List<IEdge> _edges = new();
 }

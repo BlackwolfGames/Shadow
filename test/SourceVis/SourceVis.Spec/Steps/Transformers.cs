@@ -15,8 +15,7 @@ public class NodeTransformations
     public bool IsToBool(string input) => input == "is";
 
     [StepArgumentTransformation("node '(.*)'")]
-    public INode? NameToNode(string input)
-    {
-        return _scenarioContext.Get<IDependencyGraph>()['.' + input];
-    }
+    public INode NameToNode(string input) => 
+        _scenarioContext.Get<IDependencyGraph>()[input]
+        ?? throw new KeyNotFoundException("Node not found: " + input);
 }

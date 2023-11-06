@@ -100,7 +100,7 @@
                                          local project_name="${'$'}1"
                                          cd test/${'$'}project_name/${'$'}project_name.Spec/bin/Debug/net7.0
                                          livingdoc test-assembly ${'$'}project_name.Spec.dll -t TestExecution.json
-                                         cp LivingDoc.html artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
+                                         cp LivingDoc.html ${'$'}original_dir/artifacts/${'$'}project_name/LivingDoc${'$'}project_name.html
                                          cd ${'$'}original_dir
                                      }
                                      

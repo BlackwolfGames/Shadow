@@ -11,8 +11,8 @@ public class Edge : IEdge
             _weights.Add(dependencyType, edge[dependencyType]);
         }
 
-        from = graph[edge.lhsName] ?? throw new NullReferenceException();
-        to = graph[edge.rhsName] ?? throw new NullReferenceException();
+        from = graph.Exact(edge.LhsName) ?? throw new NullReferenceException($"There is no node named {edge.LhsName} in the dependency graph");
+        to = graph.Exact(edge.RhsName) ?? throw new NullReferenceException($"There is no node named {edge.RhsName} in the dependency graph");
     }
 
     public INode from { get; }

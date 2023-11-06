@@ -11,15 +11,15 @@ public class PreEdge : IEdge
             _weights.Add(dependencyType, pairValue.Value[dependencyType]);
         }
 
-        lhsName = lhs;
-        rhsName = pairValue.Key;
+        LhsName = lhs;
+        RhsName = pairValue.Key;
     }
 
     public INode from => throw new NotSupportedException("resolve edges first");
     public INode to => throw new NotSupportedException("resolve edges first");
 
-    public string lhsName { get; }
-    public string rhsName { get; }
+    public string LhsName { get; }
+    public string RhsName { get; }
 
 
     public int this[DependencyType type] => _weights[type];

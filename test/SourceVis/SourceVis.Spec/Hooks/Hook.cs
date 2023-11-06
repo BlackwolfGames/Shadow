@@ -29,11 +29,11 @@ public class LogHelper
         // If you could access the line number, store it as well
     }
 
-    public void LogAssert(Action Assertion)
+    public void LogAssert(Action assertion)
     {
         try
         {
-            Assertion();
+            assertion();
         }
         catch (Exception ex)
         {
