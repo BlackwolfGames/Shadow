@@ -12,10 +12,16 @@ public class NodeTransformations
         _scenarioContext = scenarioContext;
     }
     [StepArgumentTransformation("(is|is not)")]
-    public bool IsToBool(string input) => input == "is";
+    public static bool IsToBool(string input) => input == "is";
 
     [StepArgumentTransformation("node '(.*)'")]
     public INode NameToNode(string input) => 
         _scenarioContext.Get<IDependencyGraph>()[input]
         ?? throw new KeyNotFoundException("Node not found: " + input);
+    
+    
+    [StepArgumentTransformation("edge from '(.*)' to '(.*)'")]
+    public IEdge NameToNode(string lhs, string rhs) => 
+        _scenarioContext.Get<IDependencyGraph>()[lhs]?[rhs]
+        ?? throw new KeyNotFoundException($"edge not found: {lhs} -> {rhs}");
 }

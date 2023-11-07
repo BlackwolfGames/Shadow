@@ -34,8 +34,10 @@ public class TestVariableDeclarations {
     public DependsOnClass Dep2 = new();
     public IDependsOnInterface Dep3 = new DependsOnClass();
     public static void Func() {
+#pragma warning disable CS0168 // Variable is declared but never used
         DependsOnStruct dep4;
         DependsOnClass dep5;
         IDependsOnInterface dep6;
+#pragma warning restore CS0168 // Variable is declared but never used
     }
 }

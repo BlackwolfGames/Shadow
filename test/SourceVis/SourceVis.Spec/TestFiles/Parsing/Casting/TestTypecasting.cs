@@ -1,4 +1,4 @@
-﻿namespace SourceVisSpec.TestFiles.Casting;
+﻿namespace SourceVis.Spec.TestFiles.Parsing.Casting;
 
 public class TypeA
 {
@@ -14,9 +14,9 @@ public partial class TypeC : TypeB
 {
 }
 
-public class TestTypecasting
+public static class TestTypecasting
 {
-    public void TypecastTest()
+    public static void TypecastTest()
     {
         var type = new TypeA();
         var tb = (TypeB) type;

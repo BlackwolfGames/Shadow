@@ -16,7 +16,7 @@
 		Then there is a node 'IBase'
 		Then node 'IBase' has 0 edges
 		Then node 'DerivedClass' has an edge to node 'IBase'
-		Then the edge from node 'DerivedClass' to node 'IBase' has 1 dependency of type 'Implementation' 
+		Then the edge from 'DerivedClass' to 'IBase' has 1 dependency of type 'Implementation' 
 		
 	Scenario: Class with multiple dependencies
 		Given we parse 'Graphing/Simple/MultipleDependencies.cs'
@@ -29,10 +29,10 @@
 		And there is a node '.Dependency'
 		And node '.Dependency' has 1 edge
 		And node '.Dependency' has an edge to node 'IDependency'
-		And the edge from node '.Dependency' to node 'IDependency' has 1 dependency of type 'Implementation' 
+		And the edge from '.Dependency' to 'IDependency' has 1 dependency of type 'Implementation' 
 		
 		And there is a node 'ConsumerClass'
 		And node 'ConsumerClass' has 1 edge
 		And node 'ConsumerClass' has an edge to node 'IDependency'
-		And the edge from node 'ConsumerClass' to node 'IDependency' has 1 dependency of type 'Property' 
-		And the edge from node 'ConsumerClass' to node 'IDependency' has 1 dependency of type 'ParameterInjection' 
+		And the edge from 'ConsumerClass' to 'IDependency' has 1 dependency of type 'Property' 
+		And the edge from 'ConsumerClass' to 'IDependency' has 1 dependency of type 'ParameterInjection' 

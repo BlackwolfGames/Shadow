@@ -25,7 +25,7 @@ public class DependencyGraph : IDependencyGraph
         var cycles = _nodes.FindCycles();
         foreach (var node in _nodes)
         {
-            ((Node) node).IsInCycle = cycles.Any(n => n.Contains(node));
+            ((Node) node).IsInCycle = cycles.Exists(n => n.Contains(node));
         }
 
         Cycles = cycles.Count;

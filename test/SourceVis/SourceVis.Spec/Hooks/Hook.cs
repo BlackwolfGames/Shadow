@@ -5,11 +5,11 @@ namespace SourceVis.Spec.Hooks;
 [Binding]
 public class LogHelper
 {
-    private string FeatureFilePath = null;
-    string currentFeatureName = null;
-    string currentFeatureDesc = null;
-    string currentScenarioText = null;
-    string currentStepText = null;
+    private string FeatureFilePath = string.Empty;
+    string currentFeatureName = string.Empty;
+    string currentFeatureDesc = string.Empty;
+    string currentScenarioText = string.Empty;
+    string currentStepText = string.Empty;
 
     [BeforeScenario]
     public void CaptureScenarioInformation(ScenarioContext scenario, FeatureContext feature)

@@ -41,10 +41,10 @@ public class GraphingSteps: LogHelper
         LogAssert(() => Assert.That(node[edge.Name], Is.Not.Null));
     }
     
-    [Then(@"the edge from (node '[^']*') to (node '[^']*') has (\d*) dependency of type '([^']*)'")]
-    public void ThenGraphNodeHasEdges(INode node, INode edge, int weight, DependencyType type)
+    [Then(@"the (edge from '[^']*' to '[^']*') has (\d*) dependency of type '([^']*)'")]
+    public void ThenGraphNodeHasEdges(IEdge edge, int weight, DependencyType type)
     {
-        LogAssert(() => Assert.That(node[edge.Name]?[type], Is.EqualTo(weight)));
+        LogAssert(() => Assert.That(edge[type], Is.EqualTo(weight)));
     }
 
     [Then(@"(node '[^']*') is of '(.*)' type")]

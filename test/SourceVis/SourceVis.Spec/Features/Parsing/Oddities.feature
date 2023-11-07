@@ -14,4 +14,5 @@
           | TestNestingAndAnnotations | 3             | EmbeddedClass    | 1        | Nesting            | 1         |
           | TestNestingAndAnnotations | 3             | TestTagAttribute | 2        | Attribute          | 2         |
           | TestNestingAndAnnotations | 3             | string           | 1        | ParameterInjection | 1         |
-          | TestTagAttribute          | 1             | Attribute        | 1        | Extension          | 1         |
+          | TestTagAttribute          | 2             | Attribute        | 1        | Extension          | 1         |
+          | TestTagAttribute          | 2             | AttributeUsageAttribute   | 1        | Attribute          | 1         |

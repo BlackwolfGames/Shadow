@@ -17,6 +17,9 @@ public class PreEdge : IEdge
 
     public INode from => throw new NotSupportedException("resolve edges first");
     public INode to => throw new NotSupportedException("resolve edges first");
+    public int LeavesNamespaces => throw new NotSupportedException("resolve edges first");
+    public int EntersNamespaces => throw new NotSupportedException("resolve edges first");
+    public int SharedNamespaces => throw new NotSupportedException("resolve edges first");
 
     public string LhsName { get; }
     public string RhsName { get; }

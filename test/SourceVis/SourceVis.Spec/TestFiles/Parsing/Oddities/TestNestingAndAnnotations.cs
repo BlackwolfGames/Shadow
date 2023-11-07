@@ -14,6 +14,7 @@ public class TestNestingAndAnnotations
     }
 }
 
+[AttributeUsage(AttributeTargets.All)]
 public class TestTagAttribute : Attribute
 {
 }
