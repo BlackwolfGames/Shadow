@@ -31,13 +31,12 @@ public class DependencyGraph : IDependencyGraph
         Cycles = cycles.Count;
     }
 
-    public int Nodes => _nodes.Count;
-    public IEnumerable<IEdge> AllEdges => _nodes.SelectMany(node => node.AllEdges);
+    public IEnumerable<INode> AllNodes => _nodes;
     public int Cycles { get; }
 
     private readonly List<INode> _nodes;
 
-    public INode? this[string name]
+    public INode this[string name]
     {
         get
         {
