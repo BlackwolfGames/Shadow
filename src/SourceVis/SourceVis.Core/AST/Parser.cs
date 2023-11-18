@@ -71,9 +71,8 @@ public static class Parser
 
     private static IEnumerable<IAnalysisStrategy> GatherStrategies()
     {
-        var type = typeof(IAnalysisStrategy);
         return Assembly.GetExecutingAssembly().GetTypes()
-            .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract)
+            .Where(p => typeof(IAnalysisStrategy).IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract)
             .Select(Activator.CreateInstance)
             .Cast<IAnalysisStrategy>();
     }

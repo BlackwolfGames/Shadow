@@ -15,6 +15,8 @@ public class NodeTransformations
     }
     [StepArgumentTransformation("(is|is not)")]
     public static bool IsToBool(string input) => input == "is";
+    [StepArgumentTransformation("(enable|disable)")]
+    public static bool EnableToBool(string input) => input == "enable";
 
     [StepArgumentTransformation("node '(.*)'")]
     public INode NameToNode(string input) => 
