@@ -115,8 +115,8 @@ public class LayoutSteps
         var delta = _scenarioContext.Get<Dictionary<string, (Vector2, Func<Vector2>)>>()[p0];
         Assert.That(delta.Item2(), Is.EqualTo(delta.Item1).Within(0.01f));
     }
-    [Then(@"'(.*)' has moved (up|left|right|down|upleft|upright|downleft|downright) by (\d*)")]
-    public void ThenHasMovedTo(string p0, MovementDir movement, int distance)
+    [Then(@"'(.*)' has moved (up|left|right|down|upleft|upright|downleft|downright) by ([\d\.]*)")]
+    public void ThenHasMovedTo(string p0, MovementDir movement, float distance)
     {
         var (initialPosition, currentPositionFunc) = _scenarioContext.Get<Dictionary<string, (Vector2, Func<Vector2>)>>()[p0];
         Vector2 currentPosition = currentPositionFunc();
@@ -130,19 +130,23 @@ public class LayoutSteps
         // Define acceptable angle ranges for each direction
         var directionRanges = new Dictionary<MovementDir, (float min, float max)>
         {
-            { MovementDir.Up, (-10, 10) }, // Assuming straight up is 0 degrees and the angle increases clockwise
+            { MovementDir.Right, (350, 370) }, // Assuming straight up is 0 degrees and the angle increases clockwise
             { MovementDir.UpRight, (10, 80) }, 
-            { MovementDir.Right, (80, 100) }, 
-            { MovementDir.DownRight, (100, 170) }, 
-            { MovementDir.Down, (170, 190) }, 
+            { MovementDir.Up, (80, 100) }, 
+            { MovementDir.UpLeft, (100, 170) }, 
+            { MovementDir.Left, (170, 190) }, 
             { MovementDir.DownLeft, (190, 260) },
-            { MovementDir.Left, (260, 280) }, 
-            { MovementDir.UpLeft, (280, -10) }
+            { MovementDir.Down, (260, 280) }, 
+            { MovementDir.DownRight, (280, 350) }
             // Define other directions similarly...
         };
 
         // Check if the direction of movement is within the acceptable range
         double movementAngleDegrees = Math.Atan2(directionMoved.Y, directionMoved.X) * (180 / Math.PI);
+        movementAngleDegrees += 360;
+        movementAngleDegrees %= 360;
+        if (movementAngleDegrees <= 10)
+            movementAngleDegrees += 360;
         var (minAngle, maxAngle) = directionRanges[movement];
 
         // Assert that both direction and distance are correct

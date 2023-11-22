@@ -33,10 +33,16 @@ Scenario: Graph layout engine basic behavior
 	Then we're at step 2
 	And 'pos1' has moved nowhere
 	And 'pos2' has moved nowhere
-	
-	When we enable the 'Centering' force
-	Then there is 1 active force
-	When the graph is relaxed for 1 step
 
-	Then 'pos1' has moved right by 0
-	And 'pos2' has moved down by 0
+	When moving the projection of 'TestCallConsole' to (9.9,0)
+	When moving the projection of '.Console' to (0,9)
+	Then 'pos1' has moved left by 0.1
+	And 'pos2' has moved down by 1
+	When moving the projection of 'TestCallConsole' to (10.4,-1)
+	When moving the projection of '.Console' to (-2,12)
+	Then 'pos1' has moved downright by 1.08
+	And 'pos2' has moved upleft by 2.83
+	When moving the projection of 'TestCallConsole' to (10,0)
+	When moving the projection of '.Console' to (0,10)
+	Then 'pos1' has moved nowhere
+	And 'pos2' has moved nowhere

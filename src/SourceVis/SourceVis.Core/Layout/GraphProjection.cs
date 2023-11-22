@@ -18,8 +18,15 @@ public class GraphProjection
         );
     }
 
-    private GraphProjection(ProjectedNode[] nodes) => _nodes = nodes;
-    private readonly ProjectedNode[] _nodes;
+    private GraphProjection(ProjectedNode[] nodes) => Nodes = nodes;
+    public ProjectedNode[] Nodes { get; }
+
+    public IEnumerable<ProjectedEdge> Edges => Nodes
+        .SelectMany(node => node.Held.AllEdges
+            .Select(edge => 
+                new ProjectedEdge(
+                    node, 
+                    Nodes.Single(node => node.Held == edge.to))));
 
     public ProjectedNode this[string name]
     {
@@ -27,7 +34,7 @@ public class GraphProjection
         {
             try
             {
-                return _nodes.SingleOrDefault(node => node.Held.Name.EndsWith(name)) ??
+                return Nodes.SingleOrDefault(node => node.Held.Name.EndsWith(name)) ??
                        throw new KeyNotFoundException(
                            $"No node found with name {name}");
             }
