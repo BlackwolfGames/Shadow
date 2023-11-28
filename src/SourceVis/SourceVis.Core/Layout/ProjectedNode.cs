@@ -9,4 +9,15 @@ public class ProjectedNode
 
     public INode Held { get; }
     public Vector2 Position { get; set; }
+
+    public void Print(TextWriter stream)
+    {
+        stream.WriteLine("Name: "+Held.Name.Split('.')[^1]);
+        stream.WriteLine("Position: "+Position);
+        foreach (var edge in Held.AllEdges)
+        {
+            stream.WriteLine($"Edge: {edge.to.Name.Split('.')[^1]}");
+        }
+        stream.WriteLine();
+    }
 }

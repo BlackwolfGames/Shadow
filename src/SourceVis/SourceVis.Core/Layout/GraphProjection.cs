@@ -45,4 +45,13 @@ public class GraphProjection
             }
         }
     }
+
+    public void Print(TextWriter? stream = null)
+    {
+        stream ??= Console.Out;
+        foreach (ProjectedNode node in Nodes)
+        {
+            node.Print(stream);
+        }
+    }
 }

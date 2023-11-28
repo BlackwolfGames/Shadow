@@ -11,7 +11,7 @@ Scenario: Dependencies on undefined types (like generics)
 	And node 'GenericHolder<T>' has 2 edge
 	And node 'GenericHolder<T>' has an edge to node 'T'
 	And node 'GenericHolder<T>' has an edge to node 'DateTime'
-	And the edge from node 'GenericHolder<T>' to node 'T' has 1 dependency of type 'VariableDeclaration' 
+	And the edge from 'GenericHolder<T>' to 'T' has 1 dependency of type 'VariableDeclaration' 
 	And node 'T' has 0 edges
 	
 	And node 'GenericHolder<T>' is of 'normal' type

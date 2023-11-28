@@ -6,7 +6,7 @@ public static class LineIntersection
 {
     private static int Orientation(Vector2 p, Vector2 q, Vector2 r)
     {
-        float val = (q.Y - p.Y) * (r.X - q.X) - (q.X - p.X) * (r.Y - q.Y);
+        var val = (q.Y - p.Y) * (r.X - q.X) - (q.X - p.X) * (r.Y - q.Y);
         if (val == 0) return 0; // Collinear
 
         return (val > 0) ? 1 : 2; // Clockwise or Counterclockwise
@@ -21,9 +21,11 @@ public static class LineIntersection
 
     public static bool Intersects(this ProjectedEdge edge1, ProjectedEdge edge2)
     {
-        Vector2 p1 = edge1.Start;
-        Vector2 q1 = edge1.End;
-        Vector2 p2 = edge2.Start;
+        if (!Skip(edge1, edge2)) return false;
+
+        var p1 = edge1.Start;
+        var q1 = edge1.End;
+        var p2 = edge2.Start;
         Vector2 q2 = edge2.End;
 
         // Find the four orientations needed for the general and special cases
@@ -51,5 +53,16 @@ public static class LineIntersection
 
         // Doesn't fall in any of the above cases
         return false;
+    }
+
+    private static bool Skip(ProjectedEdge edge1, ProjectedEdge edge2)
+    {
+        if (edge1.Start == edge2.Start && edge1.End == edge2.End)
+            return false;
+        if (edge1.Start == edge2.End && edge1.End == edge2.Start)
+            return false;
+        if (edge1.Start == edge1.End || edge2.Start == edge2.End)
+            return false;
+        return true;
     }
 }

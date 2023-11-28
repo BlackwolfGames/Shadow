@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Profile>
+  <Settings>
+    <StepDefinitionReport>True</StepDefinitionReport>
+    <ErrorOnMissingOrPendingSteps>True</ErrorOnMissingOrPendingSteps>
+  </Settings>
+</Profile>

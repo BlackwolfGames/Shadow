@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using NCalc;
 using SourceVisCore.Graphing;
 using SourceVisCore.Layout;
 
@@ -36,4 +37,7 @@ public class NodeTransformations
     [StepArgumentTransformation(@"\((.*),(.*)\)")]
     public static Vector2 ConvertToVector2(string x, string y) => 
         new(float.Parse(x), float.Parse(y));
+
+    [StepArgumentTransformation(@"'([^']*)'")]
+    public static Expression ConvertToExpression(string x) => new(x);
 }
