@@ -2,20 +2,20 @@
 
 public class Solution
 {
-    private readonly Dictionary<string, Project> _projects = new(); 
+  private readonly Dictionary<string, Project> _projects = new();
 
-    public Project AddProject(string name)
-    {
-        _projects.TryAdd(name, new Project());
-        return _projects[name];
-    }
+  public Project AddProject(string name)
+  {
+    _projects.TryAdd(name, new Project());
+    return _projects[name];
+  }
 
-    public void Print()
+  public void Print()
+  {
+    foreach (var project in _projects)
     {
-        foreach (var project in _projects)
-        {
-            Console.WriteLine($"Project: {project.Key}");
-            project.Value.Print();
-        }
+      Console.WriteLine($"Project: {project.Key}");
+      project.Value.Print();
     }
+  }
 }

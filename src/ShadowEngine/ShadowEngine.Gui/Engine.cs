@@ -2,5 +2,5 @@
 
 public class Engine
 {
-    public EngineState State => EngineState.Inactive;
+  public EngineState State => EngineState.Inactive;
 }

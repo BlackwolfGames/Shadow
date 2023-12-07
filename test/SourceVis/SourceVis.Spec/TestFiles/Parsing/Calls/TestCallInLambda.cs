@@ -1,31 +1,30 @@
-﻿using System;
-namespace HelloWorld;
+﻿namespace HelloWorld;
 
 public static class TestCallInLambda
 {
-    public static void RunLambda()
+  public static void RunLambda()
+  {
+    Action temp = () => { Console.WriteLine("Test"); };
+    temp();
+  }
+
+  public static void RunLocalStaticFunction()
+  {
+    Temp();
+
+    static void Temp()
     {
-        var temp = () => { Console.WriteLine("Test"); };
-        temp();
+      Console.WriteLine("Test");
     }
+  }
 
-    public static void RunLocalStaticFunction()
+  public static void RunLocalInstanceFunction()
+  {
+    Temp();
+
+    void Temp()
     {
-        Temp();
-
-        static void Temp()
-        {
-            Console.WriteLine("Test");
-        }
+      Console.WriteLine("Test");
     }
-
-    public static void RunLocalInstanceFunction()
-    {
-        Temp();
-
-        void Temp()
-        {
-            Console.WriteLine("Test");
-        }
-    }
+  }
 }

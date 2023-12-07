@@ -1,13 +1,12 @@
 using NUnit.Framework;
 
-namespace SourceVisUnit;
+namespace SourceVis.Unit;
 
 public class Tests
 {
-
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
-    }
+  [Test]
+  public void Test1()
+  {
+    Assert.Pass();
+  }
 }

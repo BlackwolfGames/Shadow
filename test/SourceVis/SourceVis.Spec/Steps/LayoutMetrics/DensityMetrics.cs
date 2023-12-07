@@ -18,35 +18,21 @@ public class DensityMetrics
   [Then(@"the bounding box is (.*) ('[^\']*') by ('[^\']*')")]
   public void ThenTheBoundingBoxIs(EqualClass eq, Expression expectedWidth, Expression expectedHeight)
   {
-    var nodes = _scenarioContext
-      .Get<GraphProjection>()
-      .Nodes.Select(node => node.Position);
+    var nodes = _scenarioContext.Get<GraphProjection>().Nodes.Select(node => node.Position);
     var minX = float.MaxValue;
     var maxX = float.MinValue;
     var minY = float.MaxValue;
     var maxY = float.MinValue;
 
-    foreach (var point in nodes)
+    foreach (Vector2 point in nodes)
     {
-      if (point.X < minX)
-      {
-        minX = point.X;
-      }
+      if (point.X < minX) minX = point.X;
 
-      if (point.X > maxX)
-      {
-        maxX = point.X;
-      }
+      if (point.X > maxX) maxX = point.X;
 
-      if (point.Y < minY)
-      {
-        minY = point.Y;
-      }
+      if (point.Y < minY) minY = point.Y;
 
-      if (point.Y > maxY)
-      {
-        maxY = point.Y;
-      }
+      if (point.Y > maxY) maxY = point.Y;
     }
 
     var width = maxX - minX;
@@ -59,36 +45,22 @@ public class DensityMetrics
   [Then(@"the contained node density is (.*) ('[^\']*')")]
   public void ThenTheContainedNodeDensityIs(EqualClass eq, Expression expectedDensity)
   {
-    var nodes = _scenarioContext
-      .Get<GraphProjection>()
-      .Nodes.Select(node => node.Position);
+    var nodes = _scenarioContext.Get<GraphProjection>().Nodes.Select(node => node.Position);
     var minX = float.MaxValue;
     var maxX = float.MinValue;
     var minY = float.MaxValue;
     var maxY = float.MinValue;
 
     var enumerable = nodes as Vector2[] ?? nodes.ToArray();
-    foreach (var point in enumerable)
+    foreach (Vector2 point in enumerable)
     {
-      if (point.X < minX)
-      {
-        minX = point.X;
-      }
+      if (point.X < minX) minX = point.X;
 
-      if (point.X > maxX)
-      {
-        maxX = point.X;
-      }
+      if (point.X > maxX) maxX = point.X;
 
-      if (point.Y < minY)
-      {
-        minY = point.Y;
-      }
+      if (point.Y < minY) minY = point.Y;
 
-      if (point.Y > maxY)
-      {
-        maxY = point.Y;
-      }
+      if (point.Y > maxY) maxY = point.Y;
     }
 
     var width = maxX - minX;
@@ -101,35 +73,21 @@ public class DensityMetrics
   [Then(@"the contained edge density is (.*) ('[^\']*')")]
   public void ThenTheContainedEdgeDensityIs(EqualClass eq, Expression expectedDensity)
   {
-    var nodes = _scenarioContext
-      .Get<GraphProjection>()
-      .Nodes.Select(node => node.Position);
+    var nodes = _scenarioContext.Get<GraphProjection>().Nodes.Select(node => node.Position);
     var minX = float.MaxValue;
     var maxX = float.MinValue;
     var minY = float.MaxValue;
     var maxY = float.MinValue;
 
-    foreach (var point in nodes)
+    foreach (Vector2 point in nodes)
     {
-      if (point.X < minX)
-      {
-        minX = point.X;
-      }
+      if (point.X < minX) minX = point.X;
 
-      if (point.X > maxX)
-      {
-        maxX = point.X;
-      }
+      if (point.X > maxX) maxX = point.X;
 
-      if (point.Y < minY)
-      {
-        minY = point.Y;
-      }
+      if (point.Y < minY) minY = point.Y;
 
-      if (point.Y > maxY)
-      {
-        maxY = point.Y;
-      }
+      if (point.Y > maxY) maxY = point.Y;
     }
 
     var width = maxX - minX;

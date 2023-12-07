@@ -1,19 +1,18 @@
-﻿namespace HelloWorld
+﻿namespace HelloWorld;
+
+internal static class TestClass
 {
-    internal static partial class TestClass
-    {
-        //deliberately empty
-    }
-
-    internal struct TestStruct
-    {
-        //deliberately empty
-    }
-
-    internal interface ITestInterface
-    {
-        //deliberately empty
-    }
-
-    internal partial record TestRecord();
+  //deliberately empty
 }
+
+internal struct TestStruct
+{
+  //deliberately empty
+}
+
+internal interface ITestInterface
+{
+  //deliberately empty
+}
+
+internal record TestRecord;

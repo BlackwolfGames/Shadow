@@ -1,9 +1,10 @@
 ﻿{
-  "stryker-config":
-  {
+  "stryker-config": {
     "solution": "..\\ShadowEngine.sln",
     "project": "SourceVisCore.csproj",
     "mutation-level": "Complete",
-    "reporters": ["html"]
+    "reporters": [
+      "html"
+    ]
   }
 }

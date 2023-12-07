@@ -1,19 +1,20 @@
 ﻿namespace SourceVis.Spec.TestFiles.Graphing.Namespaces
 {
-    namespace NamespaceOne
+  namespace NamespaceOne
+  {
+    public interface IClassA
     {
-        public interface IClassA
-        {
-        }
+    }
+  }
+
+  namespace NamespaceTwo
+  {
+    public interface IClassB
+    {
     }
 
-    namespace NamespaceTwo
+    public interface IClassC
     {
-        public interface IClassB
-        {
-        }
-        public interface IClassC
-        {
-        }
     }
+  }
 }

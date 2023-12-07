@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="OpenTK" Version="5.0.0-pre.8" />
+        <PackageReference Include="OpenTK" Version="5.0.0-pre.8"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ShadowEngine.Core\ShadowEngine.Core.csproj" />
+        <ProjectReference Include="..\ShadowEngine.Core\ShadowEngine.Core.csproj"/>
     </ItemGroup>
 
 </Project>

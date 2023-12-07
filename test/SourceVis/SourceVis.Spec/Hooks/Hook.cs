@@ -23,7 +23,7 @@ public class LogHelper
   [BeforeStep]
   public void CaptureStepInformation()
   {
-    var stepInfo = ScenarioStepContext.Current.StepInfo;
+    StepInfo? stepInfo = ScenarioStepContext.Current.StepInfo;
     _currentStepText = stepInfo.Text;
 
     // If you could access the line number, store it as well
@@ -43,8 +43,7 @@ public class LogHelper
       var fullFilePath = $"{currentDir}\\{_featureFilePath}\\{_currentFeatureName}.feature";
       var lines = File.ReadAllLines(fullFilePath);
       var lineNr = Array.FindIndex(lines, s => s.Contains(_currentStepText)) + 1;
-      throw new AssertionException(
-        $"{ex.Message}\n"
+      throw new AssertionException($"{ex.Message}\n"
         + $"\n"
         + $"Feature: '{_currentFeatureName}: {_currentFeatureDesc}\n"
         + $"- Scenario: {_currentScenarioText}\n"

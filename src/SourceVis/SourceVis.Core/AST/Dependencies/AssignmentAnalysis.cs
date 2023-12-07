@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SourceVisCore.AST.Dependencies;
+using SourceVisCore.AST.Analysis;
 
-namespace SourceVisCore.AST.ParserPatterns;
+namespace SourceVisCore.AST.Dependencies;
 
 public class DelegateAssignmentAnalysis : DependencyStrategy<AssignmentExpressionSyntax>
 {
@@ -11,27 +11,18 @@ public class DelegateAssignmentAnalysis : DependencyStrategy<AssignmentExpressio
   {
     if (assignment.Kind() != SyntaxKind.AddAssignmentExpression && assignment.Kind() != SyntaxKind.SubtractAssignmentExpression) yield break;
 
-    var leftSymbolInfo = model.GetSymbolInfo(assignment.Left);
-    var leftType = (leftSymbolInfo.Symbol as IPropertySymbol)?.Type
-      ?? (leftSymbolInfo.Symbol as IFieldSymbol)?.Type ?? (leftSymbolInfo.Symbol as ILocalSymbol)?.Type ?? (leftSymbolInfo.Symbol as IEventSymbol)?.Type;
+    SymbolInfo leftSymbolInfo = model.GetSymbolInfo(assignment.Left);
+    ITypeSymbol? leftType = (leftSymbolInfo.Symbol as IPropertySymbol)?.Type ?? (leftSymbolInfo.Symbol as IFieldSymbol)?.Type ?? (leftSymbolInfo.Symbol as ILocalSymbol)?.Type ?? (leftSymbolInfo.Symbol as IEventSymbol)?.Type;
 
     if (leftType?.TypeKind != TypeKind.Delegate) yield break; // Checking if it's a delegate
 
     // Distinguish between an event and a delegate
-    var isEvent = (leftSymbolInfo.Symbol is IEventSymbol);
+    var isEvent = leftSymbolInfo.Symbol is IEventSymbol;
     DependencyType dependencyType; // Replace with whatever DependencyType you have for normal delegates
     if (isEvent)
-    {
-      dependencyType = assignment.Kind() == SyntaxKind.AddAssignmentExpression
-        ? DependencyType.SubscribesToEvent
-        : DependencyType.UnsubscribesFromEvent;
-    }
+      dependencyType = assignment.Kind() == SyntaxKind.AddAssignmentExpression ? DependencyType.SubscribesToEvent : DependencyType.UnsubscribesFromEvent;
     else
-    {
-      dependencyType = assignment.Kind() == SyntaxKind.AddAssignmentExpression
-        ? DependencyType.SubscribesToDelegate
-        : DependencyType.UnsubscribesFromDelegate;
-    }
+      dependencyType = assignment.Kind() == SyntaxKind.AddAssignmentExpression ? DependencyType.SubscribesToDelegate : DependencyType.UnsubscribesFromDelegate;
 
     yield return new AnalysisResult(true, dependencyType, leftType.ToDisplayString());
   }

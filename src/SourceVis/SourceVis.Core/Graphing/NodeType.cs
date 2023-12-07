@@ -2,7 +2,5 @@
 
 public enum NodeType
 {
-    normal,
-    generic,
-    builtin
+  normal, generic, builtin
 }

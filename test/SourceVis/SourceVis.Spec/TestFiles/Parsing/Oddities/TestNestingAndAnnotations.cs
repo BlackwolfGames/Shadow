@@ -1,17 +1,15 @@
-﻿using System;
-
-namespace SourceVisSpec.TestFiles.Oddities;
+﻿namespace SourceVisSpec.TestFiles.Oddities;
 
 [TestTag]
 public class TestNestingAndAnnotations
 {
-    [TestTag]
-    public class EmbeddedClass
+  [TestTag]
+  public class EmbeddedClass
+  {
+    public EmbeddedClass(string _)
     {
-        public EmbeddedClass(string _)
-        {
-        }
     }
+  }
 }
 
 [AttributeUsage(AttributeTargets.All)]

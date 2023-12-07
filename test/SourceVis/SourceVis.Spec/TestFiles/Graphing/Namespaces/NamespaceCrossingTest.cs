@@ -1,79 +1,67 @@
-﻿
+﻿using Company.Project.ModuleA;
+using Company.Project.ModuleB;
+using Library;
 
 namespace Company.Project.ModuleA
 {
-    public partial class SharedService
+  file sealed partial class SharedService
+  {
+    public ExternalOrchestrator Ex = new();
+
+    public void OperationA()
     {
-#pragma warning disable CS0169 // Field is never used
-        private Library.ExternalOrchestrator _ex = new();
-#pragma warning restore CS0169 // Field is never used
-        public void OperationA()
-        {
-            //empty test function
-        }
+      //empty test function
     }
+  }
 }
+
 namespace Company.Project.ModuleB
 {
-    public class Processor
+  file sealed class Processor
+  {
+    public Processor()
     {
-        public Processor()
-        {
-            new ModuleA
-                    .SharedService()
-                .OperationA();
-            new ModuleA
-                    .SharedService()
-                .OperationB();
-        }
+      new SharedService().OperationA();
+      new SharedService().OperationB();
     }
+  }
 }
+
 namespace Company.Project.ModuleA
 {
-    public partial class SharedService
+  file sealed partial class SharedService
+  {
+    public Orchestrator _o = new();
+
+    public void OperationB()
     {
-#pragma warning disable CS0169 // Field is never used
-        private Orchestrator _o = new();
-#pragma warning restore CS0169 // Field is never used
-        public void OperationB()
-        {
-            //empty test function
-        }
+      //empty test function
     }
+  }
 }
 
 namespace Company.Project
 {
-    using ModuleA;
-    using ModuleB;
-
-    public class Orchestrator
+  file sealed class Orchestrator
+  {
+    public Orchestrator()
     {
-        public Orchestrator()
-        {
-            _ = new Processor();
-            new SharedService()
-                .OperationA();
-            new SharedService()
-                .OperationB();
-            _ = new Library
-                .ExternalOrchestrator();
-        }
+      _ = new Processor();
+      new SharedService().OperationA();
+      new SharedService().OperationB();
+      _ = new ExternalOrchestrator();
     }
+  }
 }
 
 namespace Library
 {
-    public class ExternalOrchestrator
+  file sealed class ExternalOrchestrator
+  {
+    public ExternalOrchestrator()
     {
-        public ExternalOrchestrator()
-        {
-            new Company.Project
-                    .ModuleA.SharedService()
-                .OperationA();
-            new Company.Project
-                    .ModuleA.SharedService()
-                .OperationB();
-        }
+      new SharedService().OperationA();
+      new SharedService().OperationB();
     }
+  }
 }

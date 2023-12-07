@@ -1,26 +1,24 @@
 ﻿namespace SourceVis.Spec.TestFiles.Parsing.Instantiation;
 
-public class InstantiatesSelf
+public sealed class InstantiatesSelf
 {
-    public void Test()
-    {
-        _t = new InstantiatesSelf();
-        _t.doStuff();
-    }
+  public void Test()
+  {
+    _t = new InstantiatesSelf();
+    _t.DoStuff();
+  }
 
-#pragma warning disable CA1822
-    private void doStuff()
-    {
-        //test method
-    }
-#pragma warning restore CA1822
-    private InstantiatesSelf _t = new();
+  private void DoStuff()
+  {
+    //test method
+  }
+  private InstantiatesSelf _t = new();
 }
 
-public static partial class InstantiatesOther
+public static class InstantiatesOther
 {
-    public static void Test()
-    {
-        var t = new InstantiatesSelf();
-    }
+  public static void Test()
+  {
+    _ = new InstantiatesSelf();
+  }
 }
